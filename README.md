@@ -12,10 +12,10 @@
 
 ## 2. Diagramas
 - **Modelo de datos (Firestore)**:  
-  - **Usuarios**: `userId` (string), `email` (string), `username` (string), `role` (string: "participant" o "admin"), `createdAt` (timestamp), `status` (string: "pending", "active", "inactive").  
+  - **Usuarios**: `userId` (string), `email` (string), `username` (string), `role` (string: "participant" o "admin"), `createdAt` (timestamp), `status` (string: "pending", "active", "inactive"), `bajaRequested` (boolean).  
   - **Fotos**: `photoId` (string), `userId` (string), `url` (string), `status` (string: "pending", "approved", "rejected"), `uploadDate` (timestamp), `title` (string, opcional), `category` (string: ej. "Naturaleza"), `description` (string), `timeFrame` (string/timestamp), `theme` (string, opcional).  
   - **Votaciones**: `voteId` (string), `photoId` (string), `voterIdentifier` (string), `voteDate` (timestamp).  
-- *Nota*: Fotos en Firebase Storage, URL en `Fotos`. Solo público vota, `voterIdentifier` es ID temporal.
+- *Nota*: Fotos en Firebase Storage, URL en `Fotos`. Solo público vota, 1 voto por foto.
 
 ## 3. Desarrollo del proyecto
 - Decisión inicial: Flutter + Firebase por compatibilidad y simplicidad.  
@@ -23,4 +23,4 @@
 - Modelo de datos: Tres colecciones (Usuarios, Fotos, Votaciones).  
 - **Categorías de fotos**: Naturaleza, Urbano, Retratos, Abstracto, Cultura (en `category`).  
 - **Categorías de ranking**: Bronce (>100 votos), Plata (>500 votos), Oro (>1000 votos).  
-- **Notas**: Solo público vota. `Fotos` incluye `timeFrame` y `theme`. `Usuarios` con `status` para alta/baja por admin.
+- **Notas**: Solo público vota. `Fotos` incluye `timeFrame` y `theme`. `Usuarios` con `status` y `bajaRequested` para alta/baja.
