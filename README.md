@@ -8,7 +8,7 @@
 - **Almacenamiento**: Firebase Storage
   - *Justificación*: Gestión eficiente de fotos.
 - **Autentificacion**: Firebase Autentification.
-  - *Justificacion**: Muy facil de validar el email y password de los usurarios
+  - *Justificacion*: Muy facil de validar el email y password de los usurarios
 - **Control de versiones**: Git (GitHub)
   - *Justificación*: Seguimiento del desarrollo incremental.
 
