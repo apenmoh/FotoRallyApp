@@ -16,6 +16,10 @@
   - **Fotos**: `photoId` (string), `userId` (string), `url` (string), `status` (string: "pending", "approved", "rejected"), `uploadDate` (timestamp), `title` (string, opcional), `category` (string: ej. "Naturaleza"), `description` (string), `timeFrame` (string/timestamp), `theme` (string, opcional).  
   - **Votaciones**: `voteId` (string), `photoId` (string), `voterIdentifier` (string), `voteDate` (timestamp).  
 - *Nota*: Fotos en Firebase Storage, URL en `Fotos`. Solo público vota, 1 voto por foto.
+- **Arquitectura**:  
+  - Frontend: Flutter (UI y lógica).  
+  - Backend: Firebase Firestore (datos), Firebase Storage (fotos), Firebase Authentication (login).  
+  - Flujo: Flutter interactúa con Firestore para CRUD, Storage para fotos, Auth para login.
 
 ## 3. Desarrollo del proyecto
 - Decisión inicial: Flutter + Firebase por compatibilidad y simplicidad.  
@@ -23,4 +27,12 @@
 - Modelo de datos: Tres colecciones (Usuarios, Fotos, Votaciones).  
 - **Categorías de fotos**: Naturaleza, Urbano, Retratos, Abstracto, Cultura (en `category`).  
 - **Categorías de ranking**: Bronce (>100 votos), Plata (>500 votos), Oro (>1000 votos).  
-- **Notas**: Solo público vota. `Fotos` incluye `timeFrame` y `theme`. `Usuarios` con `status` y `bajaRequested` para alta/baja.
+- **Notas**: Solo público vota. `Fotos` incluye `timeFrame` y `theme`. `Usuarios` con `status` y `bajaRequested`.
+
+## 4. Estructura de pantallas
+- **Inicio**: Info del rally, botones "Iniciar Sesión", "Registrarse", "Ver Galería".  
+- **Registro**: Formulario para participantes (espera aprobación).  
+- **Participante**: Botones "Ver/Subir Fotos", "Galería General", "Solicitud Baja", "Perfil".  
+- **Admin**: Botones "Dar Alta/Baja", "Validar Fotos", "Galería General", "Estadísticas".  
+- **Público**: Botones "Ver Galería", "Ver Estadísticas".  
+- *Nota*: Galería muestra fotos en cartas (ScrollView), público vota (1 voto por foto). Incluye "Ver Participantes" con enlace a perfiles (lista de `username` y fotos aprobadas).
