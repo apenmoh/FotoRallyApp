@@ -12,10 +12,11 @@
 
 ## 2. Diagramas
 - **Modelo de datos (Firestore)**:  
-  - **Usuarios**: `userId` (string), `email` (string), `username` (string), `role` (string: "participant" o "admin"), `createdAt` (timestamp), `status` (string: "pending", "active", "inactive"), `bajaRequested` (boolean).  
+  - **Participantes**: `userId` (string), `email` (string), `username` (string), `createdAt` (timestamp), `status` (string: "pending", "active", "inactive").  
+  - **Administradores**: `userId` (string), `email` (string), `username` (string), `createdAt` (timestamp).  
   - **Fotos**: `photoId` (string), `userId` (string), `url` (string), `status` (string: "pending", "approved", "rejected"), `uploadDate` (timestamp), `title` (string, opcional), `category` (string: ej. "Naturaleza"), `description` (string), `timeFrame` (string/timestamp), `theme` (string, opcional), `location` (string).  
   - **Votaciones**: `voteId` (string), `photoId` (string), `voterIdentifier` (string), `voteDate` (timestamp).  
-- *Nota*: Fotos en Firebase Storage, URL en `Fotos`. Solo público vota, 1 voto por foto.
+- *Nota*: Fotos en Firebase Storage, URL en `Fotos`. Solo público vota, 1 voto por foto.  
 - **Arquitectura**:  
   - Frontend: Flutter (UI y lógica).  
   - Backend: Firebase Firestore (datos), Firebase Storage (fotos), Firebase Authentication (login).  
@@ -24,10 +25,10 @@
 ## 3. Desarrollo del proyecto
 - Decisión inicial: Flutter + Firebase por compatibilidad y simplicidad.  
 - Nombre: PhotoRally, por claridad y conexión con el rally fotográfico.  
-- Modelo de datos: Tres colecciones (Usuarios, Fotos, Votaciones).  
+- Modelo de datos: Cuatro colecciones (Participantes, Administradores, Fotos, Votaciones).  
 - **Categorías de fotos**: Naturaleza, Urbano, Retratos, Abstracto, Cultura (en `category`).  
 - **Categorías de ranking**: Bronce (>100 votos), Plata (>500 votos), Oro (>1000 votos).  
-- **Notas**: Solo público vota. `Fotos` incluye `timeFrame`, `theme`, `location`. `Usuarios` con `status` y `bajaRequested`.
+- **Notas**: Solo público vota. `Fotos` incluye `timeFrame`, `theme`, `location`. Separación en `Participantes` y `Administradores` para gestionar alta/baja sin `bajaRequested`.
 
 ## 4. Estructura de pantallas
 - **Inicio**: Info del rally, botones "Iniciar Sesión", "Registrarse", "Ver Galería".  
