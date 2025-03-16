@@ -5,8 +5,8 @@
   - *Justificación*: Multiplataforma, alto rendimiento, interfaces atractivas.  
 - **Base de datos**: Firebase Firestore  
   - *Justificación*: Sincronización en tiempo real, integración con Flutter.  
-- **Almacenamiento**: Firebase Storage  
-  - *Justificación*: Gestión eficiente de fotos.  
+- **Almacenamiento**: Cloudinary  
+  - *Justificación*: Nivel gratuito generoso (25 GB), gestión eficiente de fotos.  
 - **Control de versiones**: Git (GitHub)  
   - *Justificación*: Seguimiento incremental.  
 
@@ -17,11 +17,11 @@
   - **Fotos**: `photoId` (string), `userId` (string), `url` (string), `status` (string: "pending", "approved", "rejected"), `uploadDate` (timestamp), `title` (string, opcional), `category` (string: ej. "Naturaleza"), `description` (string), `timeFrame` (string/timestamp), `theme` (string, opcional), `location` (string).  
   - **Votaciones**: `voteId` (string), `photoId` (string), `voterIdentifier` (string), `voteDate` (timestamp).  
   - **Configuracion**: `startDate` (timestamp), `endDate` (timestamp), `voteLimit` (int), `rules` (string/array).  
-- *Nota*: Fotos en Firebase Storage, URL en `Fotos`. Solo público vota, 1 voto por foto, `voteLimit` es total de votos por usuario.  
+- *Nota*: Fotos en Cloudinary, URL en `Fotos`. Solo público vota, 1 voto por foto, `voteLimit` es total de votos por usuario.  
 - **Arquitectura**:  
   - Frontend: Flutter (UI y lógica).  
-  - Backend: Firebase Firestore (datos), Firebase Storage (fotos), Firebase Authentication (login).  
-  - Flujo: Flutter interactúa con Firestore para CRUD, Storage para fotos, Auth para login.
+  - Backend: Firebase Firestore (datos), Cloudinary (fotos), Firebase Authentication (login).  
+  - Flujo: Flutter interactúa con Firestore para CRUD, Cloudinary para fotos, Auth para login.
 
 ## 3. Desarrollo del proyecto
 - Decisión inicial: Flutter + Firebase por compatibilidad y simplicidad.  
