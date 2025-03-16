@@ -5,22 +5,36 @@
   - *Justificación*: Multiplataforma, alto rendimiento, interfaces atractivas.  
 - **Base de datos**: Firebase Firestore  
   - *Justificación*: Sincronización en tiempo real, integración con Flutter.  
-- **Almacenamiento**: Firebase Storage  
-  - *Justificación*: Gestión eficiente de fotos.  
+- **Almacenamiento**: Cloudinary  
+  - *Justificación*: Nivel gratuito generoso (25 GB), gestión eficiente de fotos.  
 - **Control de versiones**: Git (GitHub)  
   - *Justificación*: Seguimiento incremental.  
 
 ## 2. Diagramas
 - **Modelo de datos (Firestore)**:  
-  - **Usuarios**: `userId` (string), `email` (string), `username` (string), `role` (string: "participant" o "admin"), `createdAt` (timestamp), `status` (string: "pending", "active", "inactive"), `bajaRequested` (boolean).  
-  - **Fotos**: `photoId` (string), `userId` (string), `url` (string), `status` (string: "pending", "approved", "rejected"), `uploadDate` (timestamp), `title` (string, opcional), `category` (string: ej. "Naturaleza"), `description` (string), `timeFrame` (string/timestamp), `theme` (string, opcional).  
+  - **Participantes**: `userId` (string), `email` (string), `username` (string), `createdAt` (timestamp), `status` (string: "pending", "active", "inactive"), `location` (string, opcional).  
+  - **Administradores**: `userId` (string), `email` (string), `username` (string), `createdAt` (timestamp).  
+  - **Fotos**: `photoId` (string), `userId` (string), `url` (string), `status` (string: "pending", "approved", "rejected"), `uploadDate` (timestamp), `title` (string, opcional), `category` (string: ej. "Naturaleza"), `description` (string), `timeFrame` (string/timestamp), `theme` (string, opcional), `location` (string).  
   - **Votaciones**: `voteId` (string), `photoId` (string), `voterIdentifier` (string), `voteDate` (timestamp).  
-- *Nota*: Fotos en Firebase Storage, URL en `Fotos`. Solo público vota, 1 voto por foto.
+  - **Configuracion**: `startDate` (timestamp), `endDate` (timestamp), `voteLimit` (int), `rules` (string/array).  
+- *Nota*: Fotos en Cloudinary, URL en `Fotos`. Solo público vota, 1 voto por foto, `voteLimit` es total de votos por usuario.  
+- **Arquitectura**:  
+  - Frontend: Flutter (UI y lógica).  
+  - Backend: Firebase Firestore (datos), Cloudinary (fotos), Firebase Authentication (login).  
+  - Flujo: Flutter interactúa con Firestore para CRUD, Cloudinary para fotos, Auth para login.
 
 ## 3. Desarrollo del proyecto
 - Decisión inicial: Flutter + Firebase por compatibilidad y simplicidad.  
 - Nombre: PhotoRally, por claridad y conexión con el rally fotográfico.  
-- Modelo de datos: Tres colecciones (Usuarios, Fotos, Votaciones).  
+- Modelo de datos: Cinco colecciones (Participantes, Administradores, Fotos, Votaciones, Configuracion).  
 - **Categorías de fotos**: Naturaleza, Urbano, Retratos, Abstracto, Cultura (en `category`).  
 - **Categorías de ranking**: Bronce (>100 votos), Plata (>500 votos), Oro (>1000 votos).  
-- **Notas**: Solo público vota. `Fotos` incluye `timeFrame` y `theme`. `Usuarios` con `status` y `bajaRequested` para alta/baja.
+- **Notas**: Solo público vota. `Fotos` incluye `timeFrame`, `theme`, `location`. `Participantes` incluye `location`. Separación en `Participantes` y `Administradores`. `Configuracion` para plazos, límites y reglas.
+
+## 4. Estructura de pantallas
+- **Inicio**: Info del rally, botones "Iniciar Sesión", "Registrarse", "Ver Galería".  
+- **Registro**: Formulario para participantes (email, username, contraseña, localidad; espera aprobación).  
+- **Participante**: Botones "Ver/Subir Fotos", "Galería General", "Solicitud Baja", "Perfil".  
+- **Admin**: Botones "Dar Alta/Baja", "Validar Fotos", "Galería General", "Estadísticas", "Configuración del Rally".  
+- **Público**: Botones "Ver Galería", "Ver Estadísticas".  
+- *Nota*: Galería muestra fotos en cartas (ScrollView), público vota (1 voto por foto). Incluye "Ver Participantes" con enlace a perfiles (lista de `username` y fotos aprobadas).
