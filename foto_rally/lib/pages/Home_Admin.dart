@@ -6,7 +6,7 @@ class Home_Admin extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Home')),
+      appBar: AppBar(title: Text('Home_Admin')),
       body: Center(child: Text('Hello, World!')),
     );
   }
