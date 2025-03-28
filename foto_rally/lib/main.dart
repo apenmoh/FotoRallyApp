@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:foto_rally/pages/Galeria.dart';
-import 'package:foto_rally/pages/Home_Admin.dart';
+import 'package:foto_rally/pages/Admin/Home_Admin.dart';
 import 'package:foto_rally/pages/Home_Participante.dart';
-import 'package:foto_rally/pages/Loading.dart';
 import 'package:foto_rally/pages/LogIn.dart';
 import 'package:foto_rally/pages/SignUp.dart';
 import 'firebase_options.dart';
@@ -22,7 +21,6 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       initialRoute: '/login',
       routes: {
-        '/': (context) => Loading(),
         '/galeria': (context) => Galeria(),
         '/login': (context) => Login(),
         '/signup': (context) => SignUp(),

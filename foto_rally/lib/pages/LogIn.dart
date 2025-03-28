@@ -131,7 +131,7 @@ class _LoginState extends State<Login> {
                     Navigator.pushNamed(context, '/galeria');
                   },
                   text: "Ver Galería",
-                  backgroundColor: Colors.green[900]!,
+                  backgroundColor: Color(0xFF047857),
                   textColor: Colors.white,
                   width: 350,
                   height: 80,
@@ -183,9 +183,11 @@ class _LoginState extends State<Login> {
                 ),
                 SizedBox(height: 10.0),
                 CustomButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.pushNamed(context, "/signup");
+                  },
                   text: "Registrarme",
-                  backgroundColor: Colors.black,
+                  backgroundColor: Color(0xFF111827),
                   textColor: Colors.white,
                   width: 380,
                   height: 50,
@@ -202,10 +204,15 @@ class _LoginState extends State<Login> {
 
   Future<void> ValidarLogin(BuildContext context) async {
     try {
+      // Intentar iniciar sesión con Firebase Authentication
       UserCredential userCredential = await _auth.signInWithEmailAndPassword(
         email: _emailController.text.trim(),
         password: _passwordController.text.trim(),
       );
+
+      print(_emailController.text);
+      print(_emailController.text);
+      
 
       final userId = userCredential.user?.uid;
       if (userId == null) {
@@ -226,32 +233,41 @@ class _LoginState extends State<Login> {
       if (participantDoc.exists) {
         final participantData = participantDoc.data() as Map<String, dynamic>;
         final status = participantData['status'] as String;
-        if (status == 'active') {
-          Navigator.pushNamed(context, '/home-participante');
-        } else {
-          // Si no está activo (pending o inactive), puede entrar pero con acceso limitado
+
+        if (status == 'activo') {
+          // Si el estado es "active", permitir acceso
+          Navigator.pushReplacementNamed(context, '/home-participante');
+        } else if (status == 'pendiente') {
+          // Si el estado es "pendiente", bloquear acceso
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(
-                status == 'pending'
-                    ? 'Tu cuenta está pendiente de aprobación. Solo puedes ver las fotos.'
-                    : 'Tu cuenta está inactiva. Solo puedes ver las fotos.',
+                'Tu cuenta está pendiente de aprobación. Nuestro equipo te dará de alta pronto.',
               ),
               backgroundColor: Colors.orange,
               duration: Duration(seconds: 3),
             ),
           );
-          Navigator.pushNamed(context, '/home-participante');
+        } else {
+          // Si el estado es "inactivo", bloquear acceso
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                'Tu cuenta está inactiva. Contacta al administrador para más información.',
+              ),
+              backgroundColor: Colors.red,
+              duration: Duration(seconds: 3),
+            ),
+          );
         }
         return;
       }
 
       // Verificar si es Administrador
-
       final adminDoc =
           await _firestore.collection('Administradores').doc(userId).get();
       if (adminDoc.exists) {
-        Navigator.pushNamed(context, '/home_admin');
+        Navigator.pushReplacementNamed(context, '/home_admin');
         return;
       }
 
