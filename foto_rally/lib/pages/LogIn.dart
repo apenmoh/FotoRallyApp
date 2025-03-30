@@ -204,105 +204,53 @@ class _LoginState extends State<Login> {
   }
 
   Future<void> ValidarLogin(BuildContext context) async {
-    try {
-      // Intentar iniciar sesión con Firebase Authentication
-      final userCredential = await _authService.login(_emailController.text,_passwordController.text);
-      final userId = userCredential?.user?.uid;
-      if (userId == null) {
+    final mensaje = await _authService.login(
+      _emailController.text,
+      _passwordController.text,
+    );
+
+    switch (mensaje) {
+      case 'Usuraio No encontrado':
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error al autenticar usuario.'),
+            content: Text("ERROR DE INICIO SESION"),
             backgroundColor: Colors.red,
             duration: Duration(seconds: 3),
           ),
         );
-        return;
-      }
-
-      // Verificar si es Participante
-      final participantDoc =
-          await _firestore.collection('Participantes').doc(userId).get();
-      if (participantDoc.exists) {
-        final participantData = participantDoc.data() as Map<String, dynamic>;
-        final status = participantData['status'] as String;
-
-        if (status == 'activo') {
-          // Si el estado es "active", permitir acceso
-          Navigator.pushReplacementNamed(context, '/home-participante');
-        } else if (status == 'pendiente') {
-          // Si el estado es "pendiente", bloquear acceso
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                'Tu cuenta está pendiente de aprobación. Nuestro equipo te dará de alta pronto.',
-              ),
-              backgroundColor: Colors.orange,
-              duration: Duration(seconds: 3),
-            ),
-          );
-        } else {
-          // Si el estado es "inactivo", bloquear acceso
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                'Tu cuenta está inactiva. Contacta al administrador para más información.',
-              ),
-              backgroundColor: Colors.red,
-              duration: Duration(seconds: 3),
-            ),
-          );
-        }
-        return;
-      }
-
-      // Verificar si es Administrador
-      final adminDoc =
-          await _firestore.collection('Administradores').doc(userId).get();
-      if (adminDoc.exists) {
-        Navigator.pushReplacementNamed(context, '/home_admin');
-        return;
-      }
-
-      // Si no es ni participante ni administrador
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Usuario no encontrado en Participantes ni Administradores.',
+        break;
+      case 'Participante_Activo':
+        Navigator.pushReplacementNamed(context, '/home-participante');
+        break;
+      case 'Participante_Pendiente':
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("USUARIO PENDIENTE DE DAR DE ALTA"),
+            backgroundColor: Colors.orange,
+            duration: Duration(seconds: 3),
           ),
-          backgroundColor: Colors.red,
-          duration: Duration(seconds: 3),
-        ),
-      );
-    } on FirebaseAuthException catch (error) {
-      String errorMessage;
-      switch (error.code) {
-        case 'user-not-found':
-          errorMessage = 'No existe un usuario con ese correo.';
-          break;
-        case 'wrong-password':
-          errorMessage = 'Contraseña incorrecta.';
-          break;
-        case 'invalid-email':
-          errorMessage = 'El correo electrónico no es válido.';
-          break;
-        default:
-          errorMessage = 'Error al iniciar sesión: ${error.message}';
-      }
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(errorMessage),
-          backgroundColor: Colors.red,
-          duration: Duration(seconds: 3),
-        ),
-      );
-    } catch (error) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Error inesperado: $error'),
-          backgroundColor: Colors.red,
-          duration: Duration(seconds: 3),
-        ),
-      );
+        );
+        break;
+      case 'Participante_Inactivo':
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("USUARIO INACTIVO"),
+            backgroundColor: Colors.orange,
+            duration: Duration(seconds: 3),
+          ),
+        );
+        break;
+      case 'Admin_Activo':
+        Navigator.pushReplacementNamed(context, '/home_admin');
+        break;
+      case 'Usuario no encontrado en Participantes ni Administradores.':
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("Email o Password incorrectos"),
+            backgroundColor: Colors.red,
+            duration: Duration(seconds: 3),
+          ),
+        );
     }
   }
 }

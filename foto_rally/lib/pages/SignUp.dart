@@ -1,7 +1,6 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:foto_rally/Widgets/CustomButton.dart';
+import 'package:foto_rally/Services/auth_service.dart';
 
 class SignUp extends StatefulWidget {
   const SignUp({super.key});
@@ -11,8 +10,7 @@ class SignUp extends StatefulWidget {
 }
 
 class _SignUpState extends State<SignUp> {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final AuthService _authService = AuthService();
   final TextEditingController _nombre = TextEditingController();
   final TextEditingController _email = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
@@ -55,8 +53,7 @@ class _SignUpState extends State<SignUp> {
                 color: Colors.blue[800],
               ),
               child: Column(
-                crossAxisAlignment:
-                    CrossAxisAlignment.center, // Ensures content is centered
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   SizedBox(height: 10),
                   TextForm(nombre: _nombre, value: "Nombre", password: false),
@@ -80,10 +77,10 @@ class _SignUpState extends State<SignUp> {
             SizedBox(height: 30),
             CustomButton(
               onPressed: () {
-                ManegarSolicitud();
+                _handleSignUp();
               },
               text: "Enviar Solicitud",
-              backgroundColor: Color(0xFF047857), // Updated color to #047857
+              backgroundColor: Color(0xFF047857),
               textColor: Colors.white,
               width: 350,
               height: 40,
@@ -95,7 +92,7 @@ class _SignUpState extends State<SignUp> {
     );
   }
 
-  void ManegarSolicitud() async {
+  void _handleSignUp() async {
     if (_email.text.isEmpty ||
         _passwordController.text.isEmpty ||
         _nombre.text.isEmpty ||
@@ -106,73 +103,43 @@ class _SignUpState extends State<SignUp> {
           backgroundColor: Colors.red,
         ),
       );
-      return; // Salir del método si los campos están vacíos
+      return;
     }
 
     try {
-      
-      // Intentar iniciar sesión con el correo y la contraseña
-      await _auth.signInWithEmailAndPassword(
-        email: _email.text,
-        password: _passwordController.text,
+      final userCredential = await _authService.register(
+        _email.text,
+        _passwordController.text,
+        _nombre.text,
+        _localidad.text,
       );
 
-      // Si el inicio de sesión es exitoso, el usuario ya existe
+      if (userCredential != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              "Solicitud enviada correctamente. Espere a que su solicitud se procese.",
+            ),
+            backgroundColor: Colors.green,
+          ),
+        );
+
+        // Limpiar campos
+        _nombre.clear();
+        _email.clear();
+        _passwordController.clear();
+        _localidad.clear();
+
+        Navigator.pushNamed(context, "/login");
+      }
+    } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text("El usuario ya existe"),
-          backgroundColor: Colors.orange,
+          content: Text("Error al registrar: ${e.toString()}"),
+          backgroundColor: Colors.red,
         ),
       );
-      return; // Salir del método si el usuario ya existe
-      
-   } catch (e) {
-        // Continuar con el registro del usuario
-        try {
-          UserCredential userCredential =
-              await _auth.createUserWithEmailAndPassword(
-            email: _email.text,
-            password: _passwordController.text,
-          );
-
-          final data = {
-            "nombre": _nombre.text,
-            "email": _email.text,
-            "localidad": _localidad.text,
-            "userId": userCredential.user?.uid, // Guardar el UID del usuario
-            "status": "pendiente",
-            "createdAt": DateTime.now(),
-          };
-
-          await _firestore.collection("Participantes").doc(userCredential.user?.uid).set(data);
-
-          // Mostrar un mensaje de éxito
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                "Solicitud enviada correctamente. Espere a que su solicitud se procese.",
-              ),
-              backgroundColor: Colors.green,
-            ),
-          );
-
-          // Limpiar los campos después de registrar
-          _nombre.clear();
-          _email.clear();
-          _passwordController.clear();
-          _localidad.clear();
-
-          Navigator.pushNamed(context, "/login");
-        } catch (e) {
-          // Manejar errores durante el registro
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text("Error al registrar: ${e.toString()}"),
-              backgroundColor: Colors.red,
-            ),
-          );
-        }
-   }
+    }
   }
 }
 
