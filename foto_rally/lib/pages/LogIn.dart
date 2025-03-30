@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:foto_rally/Services/auth_service.dart';
+import 'package:foto_rally/Services/firestore_service.dart';
 import 'package:foto_rally/Widgets/CustomButton.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -12,7 +13,7 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirestoreService _firestoreService = FirestoreService();
   final AuthService _authService = AuthService();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
@@ -34,8 +35,8 @@ class _LoginState extends State<Login> {
         backgroundColor: Colors.blue[600],
       ),
       backgroundColor: Colors.grey[100],
-      body: FutureBuilder<DocumentSnapshot>(
-        future: _firestore.collection('Configuracion').doc('rallyRules').get(),
+      body: FutureBuilder<String>(
+        future: _firestoreService.getRallyRules(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(
@@ -55,12 +56,11 @@ class _LoginState extends State<Login> {
           if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
           }
-          if (!snapshot.hasData || !snapshot.data!.exists) {
+          if (!snapshot.hasData || snapshot.data!.isEmpty) {
             return Center(child: Text('No se encontraron reglas.'));
           }
 
-          final data = snapshot.data!.data() as Map<String, dynamic>;
-          final rules = data['rules'] as String;
+          final rules = snapshot.data!;
 
           return SingleChildScrollView(
             child: Column(

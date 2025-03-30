@@ -71,18 +71,7 @@ class AuthService {
         "status": "activo",
         "createdAt": DateTime.now(),
       };
-      db.saveUser(userCredential.user!.uid, userData);
-      await _firestore
-          .collection("Participantes")
-          .doc(userCredential.user?.uid)
-          .set({
-            "nombre": nombre,
-            "email": email,
-            "localidad": localidad,
-            "userId": userCredential.user?.uid,
-            "status": "pendiente",
-            "createdAt": DateTime.now(),
-          });
+      await db.saveUser(userCredential.user!.uid, userData);
 
       return userCredential;
     } on FirebaseAuthException catch (e) {

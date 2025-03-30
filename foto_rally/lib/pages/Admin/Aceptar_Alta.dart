@@ -1,8 +1,9 @@
 import 'dart:math';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:foto_rally/Services/firestore_service.dart';
+import 'package:foto_rally/Widgets/CustomButton.dart';
+import 'package:foto_rally/Widgets/UsuariosCard.dart';
 
 class Alta extends StatefulWidget {
   const Alta({super.key});
@@ -12,30 +13,14 @@ class Alta extends StatefulWidget {
 }
 
 class _AltaState extends State<Alta> {
-  final FirebaseFirestore db = FirebaseFirestore.instance;
-  late CollectionReference users;
-  late Future<QuerySnapshot> snapshot;
-  var userFields;
-
+  FirestoreService db = FirestoreService();
+  late Future<List> usuariosPendientes;
 
   @override
-  void initState()  {
-    // TODO: implement initState
+  void initState() {
     super.initState();
-    users = db.collection('Participantes');
-    fetchUserData();
-  }
-  Future<void> fetchUserData() async {
-    try {
-      snapshot = users.get();
-      var data = await snapshot;
-      userFields = data.docs.map((doc) => doc.data()).toList();
-      print("Hola");
-      print(userFields);
-    } catch (e) {
-      print("Error al obtener los datos: $e");
-      rethrow; // Ensures the error is propagated
-    }
+    usuariosPendientes =
+        db.getUsuariosPendientes(); // Llama al método para obtener los usuarios pendientes
   }
 
   @override
@@ -46,15 +31,48 @@ class _AltaState extends State<Alta> {
         centerTitle: true,
         backgroundColor: Color(0xFF1A56DB),
       ),
-      body: Column(
-        children: [
-          Card(
-            child: userFields != null
-                ? Text('Datos del usuario: ${userFields.toString()}')
-                : Text('Cargando datos...'),
-          ),
-        ],
-      ),
+      body: Builder(usuariosPendientes: usuariosPendientes),
     );
+  }
+}
+
+class Builder extends StatelessWidget {
+  const Builder({super.key, required this.usuariosPendientes});
+
+  final Future<List> usuariosPendientes;
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<List>(
+      future: usuariosPendientes,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasError) {
+          // Muestra un mensaje de error si ocurre un problema
+          return Center(
+            child: Text('Error al obtener los datos: ${snapshot.error}'),
+          );
+        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+          // Muestra un mensaje si no hay usuarios pendientes
+          return Center(child: Text('No hay usuarios pendientes.'));
+        } else {
+          // Muestra los datos cuando están disponibles
+          final usuarios = snapshot.data!;
+          return Lista(usuarios: usuarios);
+        }
+      },
+    );
+  }
+}
+
+class Lista extends StatelessWidget {
+  const Lista({super.key, required this.usuarios});
+
+  final List usuarios;
+
+  @override
+  Widget build(BuildContext context) {
+    return UsuariosCard(usuarios: usuarios);
   }
 }
