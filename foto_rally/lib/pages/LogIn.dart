@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:foto_rally/Services/auth_service.dart';
 import 'package:foto_rally/Widgets/CustomButton.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -12,7 +13,7 @@ class Login extends StatefulWidget {
 
 class _LoginState extends State<Login> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final AuthService _authService = AuthService();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
@@ -205,16 +206,8 @@ class _LoginState extends State<Login> {
   Future<void> ValidarLogin(BuildContext context) async {
     try {
       // Intentar iniciar sesión con Firebase Authentication
-      UserCredential userCredential = await _auth.signInWithEmailAndPassword(
-        email: _emailController.text.trim(),
-        password: _passwordController.text.trim(),
-      );
-
-      print(_emailController.text);
-      print(_emailController.text);
-      
-
-      final userId = userCredential.user?.uid;
+      final userCredential = await _authService.login(_emailController.text,_passwordController.text);
+      final userId = userCredential?.user?.uid;
       if (userId == null) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -225,7 +218,6 @@ class _LoginState extends State<Login> {
         );
         return;
       }
-      print('UID del usuario: $userId');
 
       // Verificar si es Participante
       final participantDoc =

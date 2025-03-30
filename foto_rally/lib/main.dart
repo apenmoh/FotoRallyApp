@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:foto_rally/pages/Admin/Aceptar_Alta.dart';
+import 'package:foto_rally/pages/Admin/Aceptar_Baja.dart';
+import 'package:foto_rally/pages/Admin/Validar_Fotos.dart';
 import 'package:foto_rally/pages/Galeria.dart';
 import 'package:foto_rally/pages/Admin/Home_Admin.dart';
 import 'package:foto_rally/pages/Home_Participante.dart';
@@ -26,6 +29,10 @@ class MyApp extends StatelessWidget {
         '/signup': (context) => SignUp(),
         '/home-participante': (context) => Home_Participante(),
         '/home_admin': (context) => Home_Admin(),
+        '/alta':(context) => Alta(),
+        '/baja':(context) => Baja(),
+        '/validar':(context) => ValidarFotos(),
+
       },
     );
   }

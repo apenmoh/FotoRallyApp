@@ -69,13 +69,13 @@ class _Home_AdminState extends State<Home_Admin> {
                   Opcion(
                     icon: Icons.person_add_alt_1,
                     text: "Dar de alta",
-                    onPressed: () {},
+                    onPressed: () {Navigator.pushNamed(context, '/alta');},
                   ),
                   Divider(color: Colors.white70),
                   Opcion(
                     icon: Icons.person_off_rounded,
                     text: "Dar de baja",
-                    onPressed: () {},
+                    onPressed: () {Navigator.pushNamed(context, '/baja');},
                   ),
                   Divider(color: Colors.white70),
                   Opcion(
@@ -87,7 +87,7 @@ class _Home_AdminState extends State<Home_Admin> {
                   Opcion(
                     icon: Icons.done,
                     text: "Validar fotos",
-                    onPressed: () {},
+                    onPressed: () {Navigator.pushNamed(context, '/validar');},
                   ),
                   Divider(color: Colors.white70),
                   Opcion(
