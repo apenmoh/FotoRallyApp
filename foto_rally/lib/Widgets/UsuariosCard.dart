@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:foto_rally/Services/admin_service.dart';
 import 'package:foto_rally/Widgets/CustomButton.dart' show CustomButton;
 
 class UsuariosCard extends StatelessWidget {
@@ -40,7 +41,9 @@ class UsuariosCard extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   CustomButton(
-                    onPressed: () {},
+                    onPressed:
+                        () =>
+                            rechazarParticipante((context), usuario['userId']),
                     text: "Rechazar",
                     backgroundColor: Colors.red[800] ?? Colors.red,
                     textColor: Colors.white,
@@ -50,7 +53,8 @@ class UsuariosCard extends StatelessWidget {
                   ),
                   SizedBox(width: 5),
                   CustomButton(
-                    onPressed: () {},
+                    onPressed:
+                        () => aceptarParticipante(context, usuario['userId']),
                     text: "Aceptar",
                     backgroundColor: Colors.green[800] ?? Colors.green,
                     textColor: Colors.white,
@@ -63,6 +67,30 @@ class UsuariosCard extends StatelessWidget {
             ),
           );
         },
+      ),
+    );
+  }
+
+  Future<void> aceptarParticipante(BuildContext context, String userId) async {
+    AdminService adminService = AdminService();
+    await adminService.aceptarParticipante(userId);
+    // SnackBar para mostrar mensaje de éxito
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Usuario aceptado correctamente.'),
+        duration: Duration(seconds: 2),
+      ),
+    );
+  }
+
+  Future<void> rechazarParticipante(BuildContext context, String userId) async {
+    AdminService adminService = AdminService();
+    await adminService.rechazarParticipante(userId);
+    // SnackBar para mostrar mensaje de éxito
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Usuario rechazado correctamente.'),
+        duration: Duration(seconds: 2),
       ),
     );
   }

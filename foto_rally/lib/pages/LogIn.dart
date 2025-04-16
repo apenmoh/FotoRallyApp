@@ -220,7 +220,7 @@ class _LoginState extends State<Login> {
         );
         break;
       case 'Participante_Activo':
-        Navigator.pushReplacementNamed(context, '/home-participante');
+        Navigator.pushReplacementNamed(context, '/home');
         break;
       case 'Participante_Pendiente':
         ScaffoldMessenger.of(context).showSnackBar(
@@ -241,7 +241,7 @@ class _LoginState extends State<Login> {
         );
         break;
       case 'Admin_Activo':
-        Navigator.pushReplacementNamed(context, '/home_admin');
+        Navigator.pushReplacementNamed(context, '/home');
         break;
       case 'Usuario no encontrado en Participantes ni Administradores.':
         ScaffoldMessenger.of(context).showSnackBar(

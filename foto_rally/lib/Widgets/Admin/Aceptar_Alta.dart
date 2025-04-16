@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:foto_rally/Services/firestore_service.dart';
+import 'package:foto_rally/Services/user_service.dart';
 import 'package:foto_rally/Widgets/CustomButton.dart';
 import 'package:foto_rally/Widgets/UsuariosCard.dart';
 
@@ -13,14 +14,15 @@ class Alta extends StatefulWidget {
 }
 
 class _AltaState extends State<Alta> {
-  FirestoreService db = FirestoreService();
+  UserService userService = UserService();
   late Future<List> usuariosPendientes;
 
   @override
   void initState() {
     super.initState();
     usuariosPendientes =
-        db.getUsuariosPendientes(); // Llama al método para obtener los usuarios pendientes
+        userService
+            .getUsuariosPendientes(); // Llama al método para obtener los usuarios pendientes
   }
 
   @override
