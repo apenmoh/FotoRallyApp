@@ -69,4 +69,34 @@ class UserService {
     };
     return user;
   }
+
+  Future<List> getUsuariosBaja() async {
+    try {
+      QuerySnapshot querySnapshot =
+          await _firestore
+              .collection('Participantes')
+              .where('baja', isEqualTo: true)
+              .get();
+      return querySnapshot.docs.map((doc) => doc.data()).toList();
+    } catch (e) {
+      print('Error al obtener usuarios pendientes: $e');
+      return [];
+    }
+  }
+  Future<void> updateUserBaja(String uid, bool baja) async {
+    try {
+      await _firestore.collection('Participantes').doc(uid).update({
+        'baja': baja,
+      });
+    } catch (e) {
+      print('Error al actualizar el estado del usuario: $e');
+    }
+  }
+  Future<void> updateUser(String uid, Map<String, dynamic> userData) async {
+    try {
+      await _firestore.collection('Participantes').doc(uid).update(userData);
+    } catch (e) {
+      print('Error al actualizar el usuario: $e');
+    }
+  }
 }

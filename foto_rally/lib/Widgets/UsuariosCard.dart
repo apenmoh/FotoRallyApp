@@ -3,9 +3,9 @@ import 'package:foto_rally/Services/admin_service.dart';
 import 'package:foto_rally/Widgets/CustomButton.dart' show CustomButton;
 
 class UsuariosCard extends StatelessWidget {
-  const UsuariosCard({super.key, required this.usuarios});
-
+  const UsuariosCard({super.key, required this.usuarios, required this.baja});
   final List usuarios;
+  final baja;
 
   @override
   Widget build(BuildContext context) {
@@ -40,28 +40,40 @@ class UsuariosCard extends StatelessWidget {
               trailing: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  CustomButton(
-                    onPressed:
-                        () =>
-                            rechazarParticipante((context), usuario['userId']),
-                    text: "Rechazar",
-                    backgroundColor: Colors.red[800] ?? Colors.red,
-                    textColor: Colors.white,
-                    width: 40,
-                    height: 40,
-                    borderRadius: 20,
-                  ),
-                  SizedBox(width: 5),
-                  CustomButton(
-                    onPressed:
-                        () => aceptarParticipante(context, usuario['userId']),
-                    text: "Aceptar",
-                    backgroundColor: Colors.green[800] ?? Colors.green,
-                    textColor: Colors.white,
-                    width: 40,
-                    height: 40,
-                    borderRadius: 20,
-                  ),
+                  if (!baja) ...[
+                    CustomButton(
+                      onPressed: () =>
+                          rechazarParticipante(context, usuario['userId']),
+                      text: "Rechazar",
+                      backgroundColor: Colors.red[800] ?? Colors.red,
+                      textColor: Colors.white,
+                      width: 40,
+                      height: 40,
+                      borderRadius: 20,
+                    ),
+                    SizedBox(width: 5),
+                    CustomButton(
+                      onPressed: () =>
+                          aceptarParticipante(context, usuario['userId']),
+                      text: "Aceptar",
+                      backgroundColor: Colors.green[800] ?? Colors.green,
+                      textColor: Colors.white,
+                      width: 40,
+                      height: 40,
+                      borderRadius: 20,
+                    ),
+                  ] else ...[
+                    CustomButton(
+                      onPressed: () =>
+                          darBaja(context, usuario['userId']),
+                      text: "Baja",
+                      backgroundColor: Colors.red[800] ?? Colors.red,
+                      textColor: Colors.white,
+                      width: 40,
+                      height: 40,
+                      borderRadius: 20,
+                    ),
+                  ],
                 ],
               ),
             ),
@@ -94,4 +106,17 @@ class UsuariosCard extends StatelessWidget {
       ),
     );
   }
+
+  Future<void> darBaja(BuildContext context, String userId) async {
+    AdminService adminService = AdminService();
+    await adminService.bajaParticipante(userId);
+    // SnackBar para mostrar mensaje de éxito
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Usuario dado de baja '),
+        duration: Duration(seconds: 2),
+      ),
+    );
+  }
+  
 }

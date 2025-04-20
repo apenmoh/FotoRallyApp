@@ -84,6 +84,7 @@ class AuthService {
         "localidad": localidad,
         "userId": userCredential.user?.uid,
         "status": "activo",
+        "baja": false,
         "createdAt": DateTime.now(),
       };
       await userService.saveUser(userCredential.user!.uid, userData);
