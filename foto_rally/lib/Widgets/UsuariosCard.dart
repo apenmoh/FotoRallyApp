@@ -1,20 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:foto_rally/Services/admin_service.dart';
+import 'package:foto_rally/Services/user_service.dart';
 import 'package:foto_rally/Widgets/CustomButton.dart' show CustomButton;
 
-class UsuariosCard extends StatelessWidget {
+class UsuariosCard extends StatefulWidget {
   const UsuariosCard({super.key, required this.usuarios, required this.baja});
   final List usuarios;
   final baja;
 
   @override
+  State<UsuariosCard> createState() => _UsuariosCardState();
+}
+
+class _UsuariosCardState extends State<UsuariosCard> {
+  @override
   Widget build(BuildContext context) {
     return Container(
       margin: EdgeInsets.all(20),
       child: ListView.builder(
-        itemCount: usuarios.length,
+        itemCount: widget.usuarios.length,
         itemBuilder: (context, index) {
-          final usuario = usuarios[index];
+          final usuario = widget.usuarios[index];
           return Card(
             elevation: 10,
             child: ListTile(
@@ -40,7 +46,7 @@ class UsuariosCard extends StatelessWidget {
               trailing: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  if (!baja) ...[
+                  if (!widget.baja) ...[
                     CustomButton(
                       onPressed: () =>
                           rechazarParticipante(context, usuario['userId']),
@@ -108,8 +114,9 @@ class UsuariosCard extends StatelessWidget {
   }
 
   Future<void> darBaja(BuildContext context, String userId) async {
-    AdminService adminService = AdminService();
-    await adminService.bajaParticipante(userId);
+    UserService userService = UserService();
+    await userService.updateUserStatus(userId,'inactivo');
+    await userService.updateUserBaja(userId, false);
     // SnackBar para mostrar mensaje de éxito
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -118,5 +125,6 @@ class UsuariosCard extends StatelessWidget {
       ),
     );
   }
-  
+
+
 }

@@ -96,6 +96,10 @@ class AuthService {
   }
 
   Future<void> logout() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.remove('userId');
+    await prefs.remove('email');
+    await prefs.remove('isAdmin');
     await _auth.signOut();
   }
 
@@ -112,5 +116,9 @@ class AuthService {
       default:
         return 'Error inesperado.';
     }
+  }
+
+  Future<bool> userLoogedIn() async{
+    return await this._auth.currentUser != null;
   }
 }

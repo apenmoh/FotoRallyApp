@@ -70,6 +70,12 @@ class UserService {
     return user;
   }
 
+  Future<String> getUserId() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String userId = await prefs.getString('userId') ?? '';
+    return userId;
+  }
+
   Future<List> getUsuariosBaja() async {
     try {
       QuerySnapshot querySnapshot =

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:foto_rally/Services/user_service.dart';
 import 'package:foto_rally/Widgets/Admin/Home_Admin.dart';
 import 'package:foto_rally/Widgets/Home_Participante.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class Home extends StatefulWidget {
   @override

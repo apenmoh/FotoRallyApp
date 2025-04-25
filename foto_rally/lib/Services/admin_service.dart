@@ -22,13 +22,9 @@ class AdminService {
         })
         .catchError((error) => print("Error al rechazar usuario: $error"));
   }
+  
 
-  Future<void> bajaParticipante(String uid) async {
-    userService
-        .updateUserBaja(uid, true)
-        .then((value) {
-          print("Usuario Dado de Baja");
-        })
-        .catchError((error) => print("Error al rechazar usuario: $error"));
-  }
+  
+
+
 }

@@ -35,7 +35,7 @@ class _LoginState extends State<Login> {
         backgroundColor: Colors.blue[600],
       ),
       backgroundColor: Colors.grey[100],
-      body: FutureBuilder<String>(
+      body: FutureBuilder<DocumentSnapshot>(
         future: _firestoreService.getRallyRules(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -56,11 +56,63 @@ class _LoginState extends State<Login> {
           if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
           }
-          if (!snapshot.hasData || snapshot.data!.isEmpty) {
+          if (!snapshot.hasData || !snapshot.data!.exists) {
             return Center(child: Text('No se encontraron reglas.'));
           }
+          
+          final data = snapshot.data!.data() as Map<String, dynamic>;
+          final startDate = (data['startDate'] as Timestamp?)?.toDate();
+          final endDate = (data['endDate'] as Timestamp?)?.toDate();
+          final photoLimit = data['photoLimit'] as int?;
+          final voteLimit = data['voteLimit'] as int?;
+          final isRallyActive = data['isRallyActive'] as bool?;
+          final allowPhotoUploads = data['allowPhotoUploads'] as bool?;
+          final allowVoting = data['allowVoting'] as bool?;
+          final allowedCategories = data['allowedCategories'] as List<dynamic>?;
+          final theme = data['theme'] as String?;
+          final timeFrame = data['timeFrame'] as String?;
 
-          final rules = snapshot.data!;
+          // Construir la lista de reglas
+          final List<String> rulesList = [];
+          if (allowedCategories != null && allowedCategories.isNotEmpty) {
+            final categoriesString = allowedCategories.join(', ');
+            rulesList.add('Categorías permitidas: $categoriesString');
+          }
+          if (startDate != null) {
+            rulesList.add('Fecha de inicio: ${startDate.toString()}');
+          }
+          if (endDate != null) {
+            rulesList.add('Fecha de fin: ${endDate.toString()}');
+          }
+          if (photoLimit != null) {
+            rulesList.add('Límite de fotos por participante: $photoLimit');
+          }
+          if (voteLimit != null) {
+            rulesList.add('Límite de votos por participante: $voteLimit');
+          }
+          if (isRallyActive != null) {
+            rulesList.add('Estado del rally: ${isRallyActive ? 'Activo' : 'Inactivo'}');
+          }
+          if (allowPhotoUploads != null) {
+            rulesList.add('Subida de fotos: ${allowPhotoUploads ? 'Permitida' : 'No permitida'}');
+          }
+          if (allowVoting != null) {
+            rulesList.add('Votación: ${allowVoting ? 'Permitida' : 'No permitida'}');
+          }
+          if (allowedCategories != null && allowedCategories.isNotEmpty) {
+            rulesList.add('Categorías permitidas: $allowedCategories');
+          }
+          if (theme != null && theme.isNotEmpty) {
+            rulesList.add('Tema del rally: $theme');
+          }
+          if (timeFrame != null && timeFrame.isNotEmpty) {
+            rulesList.add('Marco temporal: $timeFrame');
+          }
+
+          // Si no hay reglas para mostrar, mostramos un mensaje por defecto
+          if (rulesList.isEmpty) {
+            rulesList.add('No hay reglas definidas para este rally.');
+          }
 
           return SingleChildScrollView(
             child: Column(
@@ -100,16 +152,15 @@ class _LoginState extends State<Login> {
                         child: SingleChildScrollView(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
-                            children:
-                                rules.split(';').map((rule) {
-                                  return Padding(
-                                    padding: const EdgeInsets.only(bottom: 5.0),
-                                    child: Text(
-                                      "• $rule",
-                                      style: TextStyle(fontSize: 15.0),
-                                    ),
-                                  );
-                                }).toList(),
+                            children: rulesList.map((rule) {
+                              return Padding(
+                                padding: const EdgeInsets.only(bottom: 5.0),
+                                child: Text(
+                                  "• $rule",
+                                  style: TextStyle(fontSize: 15.0),
+                                ),
+                              );
+                            }).toList(),
                           ),
                         ),
                       ),
@@ -251,6 +302,16 @@ class _LoginState extends State<Login> {
             duration: Duration(seconds: 3),
           ),
         );
+        break;
+      case 'Error inesperado.':
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("Error al iniciar sesión"),
+            backgroundColor: Colors.red,
+            duration: Duration(seconds: 3),
+          ),
+        );
+        break;
     }
   }
 }

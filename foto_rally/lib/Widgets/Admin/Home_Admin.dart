@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:foto_rally/Services/auth_service.dart';
+import 'package:foto_rally/Services/user_service.dart';
 
 class Home_Admin extends StatefulWidget {
   const Home_Admin({super.key});
@@ -10,7 +12,7 @@ class Home_Admin extends StatefulWidget {
 }
 
 class _Home_AdminState extends State<Home_Admin> {
-
+  final AuthService authService = AuthService();
   int _currentIndex = 0;
 
   @override
@@ -26,6 +28,14 @@ class _Home_AdminState extends State<Home_Admin> {
       appBar: AppBar(
         title: Text('Home Admin'),
         centerTitle: true,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout,color: Colors.white,),
+            onPressed: () {
+              logut();
+            },
+          ),
+        ],
         backgroundColor: Color(0xFF1A56DB),
       ),
       body: SingleChildScrollView(
@@ -115,7 +125,7 @@ class _Home_AdminState extends State<Home_Admin> {
           });
           switch (_currentIndex) {
             case 0:
-              Navigator.pushReplacementNamed(context, '/home_admin');
+              Navigator.pushReplacementNamed(context, '/home');
               break;
             case 1:
               Navigator.pushNamed(context, '/galeria');
@@ -124,7 +134,7 @@ class _Home_AdminState extends State<Home_Admin> {
               //Navigator.pushNamed(context, '');
               break;
             default:
-              Navigator.pushNamed(context, '/home_admin');
+              Navigator.pushNamed(context, '/home');
               break;
           }
         },
@@ -139,9 +149,19 @@ class _Home_AdminState extends State<Home_Admin> {
             label: "Configuración",
           ),
         ],
-        selectedItemColor: Colors.red,
+        selectedItemColor: Colors.white,
         unselectedItemColor: Colors.white,
         backgroundColor: Color(0xFF1A56DB),
+      ),
+    );
+  }
+  void logut() async {
+    await authService.logout();
+    Navigator.pushNamed(context, '/login');
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Sesión cerrada'),
+        duration: Duration(seconds: 2),
       ),
     );
   }

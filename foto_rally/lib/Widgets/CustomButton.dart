@@ -16,8 +16,8 @@ class CustomButton extends StatelessWidget {
     required this.text,
     required this.backgroundColor, // Marked as required, no default
     required this.textColor, // Marked as required, no default
-    required this.width,
-    required this.height,
+    this.width = 0, // Default width
+    this.height = 0, // Default height
     required this.borderRadius,
     this.elevation = 5.0,
   }) : super(key: key);
@@ -29,12 +29,12 @@ class CustomButton extends StatelessWidget {
       style: ElevatedButton.styleFrom(
         backgroundColor: backgroundColor,
         foregroundColor: textColor,
-        padding: EdgeInsets.symmetric(horizontal: 40.0, vertical: 15.0),
+        padding: EdgeInsets.zero,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(borderRadius),
         ),
         elevation: elevation,
-        minimumSize: Size(width, height),
+         fixedSize: Size(width, height),
       ),
       child: Text(
         text,
