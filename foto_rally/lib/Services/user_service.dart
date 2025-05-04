@@ -1,9 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:foto_rally/Services/auth_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class UserService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-
+  final AuthService _authService = AuthService();
   // Guardar usuario registrado en Firestore
   Future<void> saveUser(String uid, Map<String, dynamic> userData) async {
     await _firestore.collection('Participantes').doc(uid).set(userData);
@@ -71,9 +73,7 @@ class UserService {
   }
 
   Future<String> getUserId() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String userId = await prefs.getString('userId') ?? '';
-    return userId;
+    return await _authService.getUserId();
   }
 
   Future<List> getUsuariosBaja() async {
@@ -89,6 +89,7 @@ class UserService {
       return [];
     }
   }
+
   Future<void> updateUserBaja(String uid, bool baja) async {
     try {
       await _firestore.collection('Participantes').doc(uid).update({
@@ -98,6 +99,7 @@ class UserService {
       print('Error al actualizar el estado del usuario: $e');
     }
   }
+
   Future<void> updateUser(String uid, Map<String, dynamic> userData) async {
     try {
       await _firestore.collection('Participantes').doc(uid).update(userData);

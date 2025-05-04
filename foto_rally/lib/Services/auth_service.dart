@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/widgets.dart';
 import 'package:foto_rally/Services/firestore_service.dart';
 import 'package:foto_rally/Services/user_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -103,6 +104,15 @@ class AuthService {
     await _auth.signOut();
   }
 
+  Future<String> getUserId() async {
+    bool iniciado = await this.userLoogedIn();
+    if (!iniciado) {
+      return '';
+    }
+    var userId = await _auth.currentUser?.uid;
+    return userId.toString();
+  }
+
   String _handleAuthError(String code) {
     switch (code) {
       case 'user-not-found':
@@ -118,7 +128,7 @@ class AuthService {
     }
   }
 
-  Future<bool> userLoogedIn() async{
+  Future<bool> userLoogedIn() async {
     return await this._auth.currentUser != null;
   }
 }

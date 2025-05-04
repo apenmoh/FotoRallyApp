@@ -18,20 +18,25 @@ class _PerfilState extends State<Perfil> {
   late Map<String, dynamic> userData = {};
   bool isLoading = true;
   int _currentIndex = 0; // Índice de la pestaña seleccionada
-  
- 
-@override
+
+  @override
   void initState() {
     // TODO: implement initState
     super.initState();
     getData();
-    
   }
+
   getData() async {
-   try {
+    try {
       userId = await userService.getUserId();
-      print(userId);
+      if (userId.isEmpty) {
+        throw Exception('El ID de usuario está vacío');
+      }
+      print('UserId: $userId');
       final value = await userService.getUserById(userId);
+      if (value == null) {
+        throw Exception('No se encontraron datos para el usuario');
+      }
       setState(() {
         isLoading = false;
         userData = value;
@@ -41,16 +46,20 @@ class _PerfilState extends State<Perfil> {
         isLoading = false;
       });
       print('Error obteniendo userData: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error al cargar los datos: $e'),
+          duration: Duration(seconds: 2),
+        ),
+      );
     }
-    print(userData);
+    print('UserData: $userData');
   }
 
   @override
   Widget build(BuildContext context) {
     if (isLoading) {
-      return Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      );
+      return Scaffold(body: Center(child: CircularProgressIndicator()));
     }
     return Scaffold(
       appBar: AppBar(
@@ -65,19 +74,21 @@ class _PerfilState extends State<Perfil> {
           ),
         ],
       ),
-      bottomNavigationBar:ParticipantTabNav(),
+      bottomNavigationBar: ParticipantTabNav(),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(20.0),
           child: Column(
             children: [
               CustomButton(
-                onPressed: () {Navigator.pushNamed(context, '/galeria');}, 
-                text: "Ver Mis Fotos", 
-                backgroundColor: Color(0xFF047857), 
-                textColor: Colors.white, 
-                width: 200, 
-                height: 70.0, 
+                onPressed: () {
+                  Navigator.pushNamed(context, '/galeria');
+                },
+                text: "Ver Mis Fotos",
+                backgroundColor: Color(0xFF047857),
+                textColor: Colors.white,
+                width: 200,
+                height: 70.0,
                 borderRadius: 10.0,
               ),
               const SizedBox(height: 20),
@@ -88,17 +99,33 @@ class _PerfilState extends State<Perfil> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    buildField('Nombre',userData['nombre']),
-                    buildField('Email',userData['email']),
-                    buildField('Localidad',userData['localidad']),
+                    buildField('Nombre', userData['nombre']),
+                    buildField('Email', userData['email']),
+                    buildField('Localidad', userData['localidad']),
                     Spacer(),
                     Center(
-                      child: CustomButton(onPressed: guardarDatos, text: "Guardar Cambios", backgroundColor: Color(0xFF047857), textColor: Colors.white, width: 300, height: 40, borderRadius: 20)
+                      child: CustomButton(
+                        onPressed: guardarDatos,
+                        text: "Guardar Cambios",
+                        backgroundColor: Color(0xFF047857),
+                        textColor: Colors.white,
+                        width: 300,
+                        height: 40,
+                        borderRadius: 20,
+                      ),
                     ),
                     const SizedBox(height: 15),
                     Center(
-                      child: CustomButton(onPressed: solicitarBaja, text: "Solicitar Baja", backgroundColor: Color(0xFFDC2626), textColor: Colors.white, width: 300, height: 40, borderRadius: 20)
-                    )
+                      child: CustomButton(
+                        onPressed: solicitarBaja,
+                        text: "Solicitar Baja",
+                        backgroundColor: Color(0xFFDC2626),
+                        textColor: Colors.white,
+                        width: 300,
+                        height: 40,
+                        borderRadius: 20,
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -147,16 +174,17 @@ class _PerfilState extends State<Perfil> {
     }
   }
 
-  Widget buildField(String label,String value) {
-
+  Widget buildField(String label, String value) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label,
-            style: const TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-            )),
+        Text(
+          label,
+          style: const TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         Row(
           children: [
             Expanded(
@@ -179,8 +207,6 @@ class _PerfilState extends State<Perfil> {
     );
   }
 
-
-  
   void logut() async {
     await authService.logout();
     Navigator.pushNamed(context, '/login');

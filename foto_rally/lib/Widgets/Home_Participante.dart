@@ -17,29 +17,32 @@ class _Home_ParticipanteState extends State<Home_Participante> {
   @override
   void initState() {
     super.initState();
-    userService.getUsuarioLogueado().then((value) {
-      setState(() {
-        userData = value;
-        isLoading = false;
-      });
-    }).catchError((e) {
-      setState(() {
-        isLoading = false;
-      });
-      print('Error obteniendo userData: $e');
-    });
+    userService
+        .getUsuarioLogueado()
+        .then((value) {
+          setState(() {
+            userData = value;
+            isLoading = false;
+          });
+        })
+        .catchError((e) {
+          setState(() {
+            isLoading = false;
+          });
+          print('Error obteniendo userData: $e');
+        });
   }
 
   @override
   Widget build(BuildContext context) {
     if (isLoading) {
-      return Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      );
+      return Scaffold(body: Center(child: CircularProgressIndicator()));
     }
     if (userData == null) {
       return Scaffold(
-        body: Center(child: Text('No se pudieron cargar los datos del usuario.')),
+        body: Center(
+          child: Text('No se pudieron cargar los datos del usuario.'),
+        ),
       );
     }
 
@@ -91,7 +94,7 @@ class _Home_ParticipanteState extends State<Home_Participante> {
                     icon: Icons.camera_alt_rounded,
                     text: "Subir foto",
                     onPressed: () {
-                      Navigator.pushNamed(context, '/alta');
+                      Navigator.pushNamed(context, '/subir_foto');
                     },
                   ),
                   Divider(color: Colors.white70),
@@ -122,7 +125,9 @@ class _Home_ParticipanteState extends State<Home_Participante> {
                   Opcion(
                     icon: Icons.person_outline,
                     text: "Perfil",
-                    onPressed: () {Navigator.pushNamed(context, '/perfil');},
+                    onPressed: () {
+                      Navigator.pushNamed(context, '/perfil');
+                    },
                   ),
                   Divider(color: Colors.white70),
                 ],
@@ -172,4 +177,3 @@ class Opcion extends StatelessWidget {
     );
   }
 }
-  

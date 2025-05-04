@@ -26,38 +26,40 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   AuthService authService = AuthService();
-  bool iniciado = true ;
+  bool iniciado = true;
   bool isLoading = true;
   @override
-  void initState()  {
+  void initState() {
     super.initState();
     isLoading = true;
     verificarSesion();
     isLoading = false;
   }
+
   Future<void> verificarSesion() async {
     var i = await authService.userLoogedIn();
     setState(() {
       iniciado = i;
     });
   }
+
   @override
   Widget build(BuildContext context) {
     return isLoading
         ? Center(child: CircularProgressIndicator())
         : MaterialApp(
-            initialRoute: iniciado ? '/home' : '/login',
-            routes: {
-              '/galeria': (context) => Galeria(),
-              '/login': (context) => Login(),
-              '/signup': (context) => SignUp(),
-              '/home': (context) => Home(),
-              '/alta': (context) => Alta(),
-              '/baja': (context) => Baja(),
-              '/validar': (context) => ValidarFotos(),
-              '/subir_foto': (context) => SubirFoto(),
-              '/perfil': (context) => Perfil(),
-            },
-          );
+          initialRoute: iniciado ? '/home' : '/login',
+          routes: {
+            '/galeria': (context) => Galeria(),
+            '/login': (context) => Login(),
+            '/signup': (context) => SignUp(),
+            '/home': (context) => Home(),
+            '/alta': (context) => Alta(),
+            '/baja': (context) => Baja(),
+            '/validar': (context) => ValidarFotos(),
+            '/subir_foto': (context) => SubirFoto(),
+            '/perfil': (context) => Perfil(),
+          },
+        );
   }
 }
