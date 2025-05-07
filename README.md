@@ -12,9 +12,9 @@
 
 ## 2. Diagramas
 - **Modelo de datos (Firestore)**:  
-  - **Participantes**: `userId` (string), `email` (string), `username` (string), `createdAt` (timestamp), `status` (string: "pendiente", "activo", "inactivo"), `location` (string, opcional).  
+  - **Participantes**: `userId` (string), `email` (string), `username` (string), `createdAt` (timestamp), `status` (string: "pendiente", "activo", "inactivo"), `location` (string, opcional). `fotosCount` (int)  
   - **Administradores**: `id` (string), `email` (string), `password` (string, opcional si usas Firebase Auth), `createdAt` (timestamp).  
-  - **Fotos**: `photoId` (string), `userId` (string), `url` (string), `status` (string: "pendiente", "aprobada", "rechazada"), `uploadDate` (timestamp), `title` (string, opcional), `category` (string: ej. "Naturaleza"), `description` (string), `timeFrame` (string/timestamp), `theme` (string, opcional), `location` (string).  
+  - **Fotos**: `photoId` (string), `userId` (string), `url` (string), `status` (string: "pendiente", "aprobada", "rechazada"), `uploadDate` (timestamp), `title` (string), `category` (string: ej. "Naturaleza"), `description` (string),  `theme` (string), `location` (string).  
   - **Votaciones**: `voteId` (string), `photoId` (string), `voterId` (string, el `userId` del participante que vota), `voteDate` (timestamp).  
   - **Configuracion**: `startDate` (timestamp), `endDate` (timestamp), `photoLimit` (int, ej. 5), `voteLimit` (int, ej. 10), `isRallyActive` (bool), `allowPhotoUploads` (bool), `allowVoting` (bool), `allowedCategories` (string, ej. "Naturaleza,Urbano,Retratos"), `theme` (string, opcional), `timeFrame` (string, opcional).  
 - *Nota*: Fotos almacenadas en Cloudinary, URL en `Fotos`. Votación solo para participantes activos.  
