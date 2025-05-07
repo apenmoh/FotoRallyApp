@@ -12,7 +12,7 @@
 
 ## 2. Diagramas
 - **Modelo de datos (Firestore)**:  
-  - **Participantes**: `userId` (string), `email` (string), `username` (string), `createdAt` (timestamp), `status` (string: "pendiente", "activo", "inactivo"), `location` (string, opcional).  
+  - **Participantes**: `userId` (string), `email` (string), `username` (string), `createdAt` (timestamp), `status` (string: "pendiente", "activo", "inactivo"), `location` (string, opcional). `fotosCount` (int)  
   - **Administradores**: `id` (string), `email` (string), `password` (string, opcional si usas Firebase Auth), `createdAt` (timestamp).  
   - **Fotos**: `photoId` (string), `userId` (string), `url` (string), `status` (string: "pendiente", "aprobada", "rechazada"), `uploadDate` (timestamp), `title` (string), `category` (string: ej. "Naturaleza"), `description` (string),  `theme` (string), `location` (string).  
   - **Votaciones**: `voteId` (string), `photoId` (string), `voterId` (string, el `userId` del participante que vota), `voteDate` (timestamp).  
