@@ -1,5 +1,12 @@
+import 'dart:io';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:foto_rally/Services/alert_service.dart';
+import 'package:foto_rally/Services/cloudinary_service.dart';
 import 'package:foto_rally/Services/firestore_service.dart';
+import 'package:foto_rally/Services/image_picker_service.dart';
+import 'package:foto_rally/Services/user_service.dart';
 import 'package:foto_rally/Widgets/CustomButton.dart';
 import 'package:foto_rally/Widgets/ParticipantTabNav.dart';
 
@@ -12,6 +19,11 @@ class SubirFoto extends StatefulWidget {
 
 class _SubirFotoState extends State<SubirFoto> {
   FirestoreService firestoreService = FirestoreService();
+  ImagePickerService imagePickerService = ImagePickerService();
+  CloudinaryService cloudinaryService = CloudinaryService();
+  AlertService alertService = AlertService();
+  UserService userService = UserService();
+
   final TextEditingController tituloFotoController = TextEditingController();
   final TextEditingController localidadController = TextEditingController();
   final TextEditingController categoriaController = TextEditingController();
@@ -19,7 +31,10 @@ class _SubirFotoState extends State<SubirFoto> {
 
   bool isLoading = false;
   String? selectedCategory;
+  File? selectedImageFile;
   List<String> categories = [];
+  String? theme;
+  String userId = '';
 
   @override
   void initState() {
@@ -33,7 +48,17 @@ class _SubirFotoState extends State<SubirFoto> {
     });
     try {
       final cta = await firestoreService.getRallyCategories();
+      final rules = await firestoreService.getRallyRules();
+      if (rules.exists) {
+        setState(() {
+          theme = rules['theme'];
+        });
+      } else {
+        throw Exception('No se encontraron reglas en la base de datos.');
+      }
+      final uid = await userService.getUserId();
       setState(() {
+        userId = uid;
         categories = cta;
         isLoading = false;
       });
@@ -45,6 +70,111 @@ class _SubirFotoState extends State<SubirFoto> {
         context,
       ).showSnackBar(SnackBar(content: Text('Error al cargar categorías: $e')));
     }
+  }
+
+  Future<void> TomarFoto() async {
+    setState(() {
+      isLoading = true;
+    });
+    try {
+      await imagePickerService.openCamera().then((file) async {
+        if (file != null) {
+          setState(() {
+            selectedImageFile = file;
+            isLoading = false;
+          });
+        } else {
+          setState(() {
+            isLoading = false;
+          });
+        }
+      });
+    } catch (e) {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
+  Future<void> SelecionarFoto() async {
+    setState(() {
+      isLoading = true;
+    });
+    try {
+      await imagePickerService.openGallery().then((file) async {
+        if (file != null) {
+          setState(() {
+            selectedImageFile = file;
+            isLoading = false;
+          });
+        } else {
+          setState(() {
+            isLoading = false;
+          });
+        }
+      });
+    } catch (e) {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+  
+  Future<void> SavePhoto() async {
+    setState(() {
+      isLoading = true;
+    });
+    try {
+      if (selectedImageFile != null &&
+          theme != null &&
+          userId.isNotEmpty &&
+          selectedCategory != null &&
+          tituloFotoController.text.isNotEmpty &&
+          localidadController.text.isNotEmpty &&
+          categoriaController.text.isNotEmpty &&
+          descripcionController.text.isNotEmpty) {
+        String? imageUrl = await cloudinaryService.uploadImage(selectedImageFile!);
+        if (imageUrl != null) {
+          final now = DateTime.now();
+          final photoData = {
+            'photoId': '',
+            'userId': userId,
+            'url': imageUrl,
+            'status': 'pendiente',
+            'uploadDate': Timestamp.fromDate(now),
+            'title': tituloFotoController.text,
+            'category': categoriaController.text,
+            'description': descripcionController.text, 
+            'theme': theme, 
+            'location': localidadController.text,
+          };
+
+          await firestoreService.addPhoto(photoData);
+          clearAll();
+          alertService.success(context, 'Foto subida con éxito');
+        } else {
+          alertService.error(context, 'Error al subir la foto');
+        }
+      } else {
+        alertService.error(context, 'Falta datos requeridos');
+      }
+    } catch (e) {
+      alertService.error(context, 'Error al subir la foto: $e');
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+  void clearAll() {
+    tituloFotoController.clear();
+    localidadController.clear();
+    categoriaController.clear();
+    descripcionController.clear();
+    setState(() {
+      selectedImageFile = null;
+      selectedCategory = null;
+    });
   }
 
   @override
@@ -75,7 +205,7 @@ class _SubirFotoState extends State<SubirFoto> {
               SizedBox(height: 20),
               Container(
                 width: double.infinity,
-                height: 550,
+                height: 600,
                 padding: EdgeInsets.all(16.0),
                 margin: EdgeInsets.only(bottom: 20),
                 color: Color(0xFF1A56DB),
@@ -94,34 +224,10 @@ class _SubirFotoState extends State<SubirFoto> {
                       children: [
                         Text(
                           'Categoría',
-                          style: TextStyle(fontSize: 20, color: Colors.white),
+                          style: TextStyle(fontSize: 20, color: Colors.black),
                         ),
                         SizedBox(height: 7),
-                        DropdownButtonFormField<String>(
-                          value: selectedCategory,
-                          decoration: InputDecoration(
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            filled: true,
-                            fillColor: Colors.white,
-                            labelText: 'Categoría',
-                            labelStyle: TextStyle(color: Colors.black),
-                          ),
-                          items:
-                              categories.map((String category) {
-                                return DropdownMenuItem<String>(
-                                  value: category,
-                                  child: Text(category),
-                                );
-                              }).toList(),
-                          onChanged: (String? newValue) {
-                            setState(() {
-                              selectedCategory = newValue;
-                              categoriaController.text = newValue ?? '';
-                            });
-                          },
-                        ),
+                        CategorySelect(),
                       ],
                     ),
                     SizedBox(height: 10),
@@ -131,8 +237,8 @@ class _SubirFotoState extends State<SubirFoto> {
                     ),
                     SizedBox(height: 40),
                     CustomButton(
-                      onPressed: () {},
-                      text: "Subir Foto",
+                      onPressed: TomarFoto,
+                      text: "Capturar Foto",
                       backgroundColor: Color(0xFF1E3A8A),
                       textColor: Colors.white,
                       borderRadius: 20.0,
@@ -140,7 +246,7 @@ class _SubirFotoState extends State<SubirFoto> {
                     ),
                     SizedBox(height: 20),
                     CustomButton(
-                      onPressed: () {},
+                      onPressed: SelecionarFoto,
                       text: "Seleccionar Foto",
                       backgroundColor: Color(0xFF1E3A8A),
                       textColor: Colors.white,
@@ -150,6 +256,12 @@ class _SubirFotoState extends State<SubirFoto> {
                   ],
                 ),
               ),
+              if (selectedImageFile != null)
+                Image.file(
+                  selectedImageFile!,
+                  width: 200,
+                  height: 200,
+                ),  
               SizedBox(height: 20),
               Text(
                 'El tamaño de las fotos no debe sobrepasar los 3 mb',
@@ -157,7 +269,7 @@ class _SubirFotoState extends State<SubirFoto> {
               ),
               SizedBox(height: 10),
               CustomButton(
-                onPressed: () {},
+                onPressed: SavePhoto,
                 text: "Solicitar Subida de foto",
                 backgroundColor: Color(0xFF047857),
                 textColor: Colors.white,
@@ -168,6 +280,33 @@ class _SubirFotoState extends State<SubirFoto> {
           ),
         ),
       ),
+    );
+  }
+
+
+  DropdownButtonFormField<String> CategorySelect() {
+    return DropdownButtonFormField<String>(
+      value: selectedCategory,
+      decoration: InputDecoration(
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+        filled: true,
+        fillColor: Colors.white,
+        labelText: 'Categoría',
+        labelStyle: TextStyle(color: Colors.black),
+      ),
+      items:
+          categories.map((String category) {
+            return DropdownMenuItem<String>(
+              value: category,
+              child: Text(category),
+            );
+          }).toList(),
+      onChanged: (String? newValue) {
+        setState(() {
+          selectedCategory = newValue;
+          categoriaController.text = newValue ?? '';
+        });
+      },
     );
   }
 }

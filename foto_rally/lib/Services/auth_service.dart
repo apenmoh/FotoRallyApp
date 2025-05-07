@@ -86,6 +86,7 @@ class AuthService {
         "userId": userCredential.user?.uid,
         "status": "activo",
         "baja": false,
+        "fotoCount": 0,
         "createdAt": DateTime.now(),
       };
       await userService.saveUser(userCredential.user!.uid, userData);
@@ -105,11 +106,11 @@ class AuthService {
   }
 
   Future<String> getUserId() async {
-    bool iniciado = await this.userLoogedIn();
+    bool iniciado = await userLoogedIn();
     if (!iniciado) {
       return '';
     }
-    var userId = await _auth.currentUser?.uid;
+    var userId =  _auth.currentUser?.uid;
     return userId.toString();
   }
 
@@ -129,6 +130,6 @@ class AuthService {
   }
 
   Future<bool> userLoogedIn() async {
-    return await this._auth.currentUser != null;
+    return  _auth.currentUser != null;
   }
 }

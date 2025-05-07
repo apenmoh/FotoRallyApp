@@ -31,15 +31,17 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    isLoading = true;
+    setState(() {
+      isLoading = true;
+    });
     verificarSesion();
-    isLoading = false;
   }
 
   Future<void> verificarSesion() async {
     var i = await authService.userLoogedIn();
     setState(() {
       iniciado = i;
+      isLoading = false;
     });
   }
 

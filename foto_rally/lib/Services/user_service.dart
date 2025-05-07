@@ -107,4 +107,31 @@ class UserService {
       print('Error al actualizar el usuario: $e');
     }
   }
+
+  // Obtener la cantidad de fotos de un usuario
+  Future<int> getUserPhotoCount(String uid) async {
+    try {
+      DocumentSnapshot doc =
+          await _firestore.collection('Participantes').doc(uid).get();
+      if (doc.exists) {
+        return doc['fotosCount'] ?? 0;
+      } else {
+        return 0;
+      }
+    } catch (e) {
+      print('Error al obtener la cantidad de fotos del usuario: $e');
+      return 0;
+    }
+  }
+
+  //icrement user photo count
+  Future<void> incrementUserPhotoCount(String uid) async {
+    try {
+      await _firestore.collection('Participantes').doc(uid).update({
+        'fotosCount': FieldValue.increment(1),
+      });
+    } catch (e) {
+      print('Error al incrementar el contador de fotos: $e');
+    }
+  }
 }
