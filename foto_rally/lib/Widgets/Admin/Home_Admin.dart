@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:foto_rally/Services/auth_service.dart';
 import 'package:foto_rally/Services/user_service.dart';
+import 'package:foto_rally/Widgets/ParticipantTabNav.dart';
 
 class Home_Admin extends StatefulWidget {
   const Home_Admin({super.key});
@@ -18,9 +19,7 @@ class _Home_AdminState extends State<Home_Admin> {
   @override
   void initState() {
     super.initState();
-
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +29,7 @@ class _Home_AdminState extends State<Home_Admin> {
         centerTitle: true,
         actions: [
           IconButton(
-            icon: const Icon(Icons.logout,color: Colors.white,),
+            icon: const Icon(Icons.logout, color: Colors.white),
             onPressed: () {
               logut();
             },
@@ -79,25 +78,33 @@ class _Home_AdminState extends State<Home_Admin> {
                   Opcion(
                     icon: Icons.person_add_alt_1,
                     text: "Dar de alta",
-                    onPressed: () {Navigator.pushNamed(context, '/alta');},
+                    onPressed: () {
+                      Navigator.pushNamed(context, '/alta');
+                    },
                   ),
                   Divider(color: Colors.white70),
                   Opcion(
                     icon: Icons.person_off_rounded,
                     text: "Dar de baja",
-                    onPressed: () {Navigator.pushNamed(context, '/baja');},
+                    onPressed: () {
+                      Navigator.pushNamed(context, '/baja');
+                    },
                   ),
                   Divider(color: Colors.white70),
                   Opcion(
                     icon: Icons.photo,
                     text: "Ver Galería",
-                    onPressed: (){ Navigator.pushNamed(context, '/galeria');},
+                    onPressed: () {
+                      Navigator.pushNamed(context, '/galeria');
+                    },
                   ),
                   Divider(color: Colors.white70),
                   Opcion(
                     icon: Icons.done,
                     text: "Validar fotos",
-                    onPressed: () {Navigator.pushNamed(context, '/validar');},
+                    onPressed: () {
+                      Navigator.pushNamed(context, '/validate');
+                    },
                   ),
                   Divider(color: Colors.white70),
                   Opcion(
@@ -117,44 +124,10 @@ class _Home_AdminState extends State<Home_Admin> {
           ],
         ),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentIndex,
-        onTap: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
-          switch (_currentIndex) {
-            case 0:
-              Navigator.pushReplacementNamed(context, '/home');
-              break;
-            case 1:
-              Navigator.pushNamed(context, '/galeria');
-              break;
-            case 2:
-              //Navigator.pushNamed(context, '');
-              break;
-            default:
-              Navigator.pushNamed(context, '/home');
-              break;
-          }
-        },
-        items: [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: "Inicio"),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.photo_library),
-            label: "Galería",
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
-            label: "Configuración",
-          ),
-        ],
-        selectedItemColor: Colors.white,
-        unselectedItemColor: Colors.white,
-        backgroundColor: Color(0xFF1A56DB),
-      ),
+      bottomNavigationBar: ParticipantTabNav(),
     );
   }
+
   void logut() async {
     await authService.logout();
     Navigator.pushNamed(context, '/login');

@@ -35,7 +35,7 @@ class FirestoreService {
   }
 
   // Guardar metadatos de la foto en Firestore
-  Future<void> addPhoto(Map<String, dynamic> photoData) async { 
+  Future<void> addPhoto(Map<String, dynamic> photoData) async {
     try {
       // Verificar si el usuario tiene fotos subidas
       // y si no ha alcanzado el límite de fotos permitidas
@@ -43,7 +43,7 @@ class FirestoreService {
       final rules = await getRallyRules();
       int numFotos = await userService.getUserPhotoCount(id);
 
-      if(numFotos <= rules['photoLimit']){
+      if (numFotos <= rules['photoLimit']) {
         final doc = await _firestore.collection('Fotos').doc();
 
         photoData['photoId'] = doc.id;
@@ -52,22 +52,27 @@ class FirestoreService {
 
         // Actualizar el contador de fotos del usuario
         await userService.incrementUserPhotoCount(id);
-      }else{
-        throw Exception('El usuario ha alcanzado el límite de fotos permitidas.');
+      } else {
+        throw Exception(
+          'El usuario ha alcanzado el límite de fotos permitidas.',
+        );
       }
-      
     } catch (e) {
       throw Exception('Error al guardar la foto: $e');
     }
   }
+
   // Obtener fotos de un usuario específico
   Future<List<Map<String, dynamic>>> getUserPhotos(String userId) async {
     try {
-      QuerySnapshot snapshot = await _firestore
-          .collection('photos')
-          .where('userId', isEqualTo: userId)
-          .get();
-      return snapshot.docs.map((doc) => doc.data() as Map<String, dynamic>).toList();
+      QuerySnapshot snapshot =
+          await _firestore
+              .collection('photos')
+              .where('userId', isEqualTo: userId)
+              .get();
+      return snapshot.docs
+          .map((doc) => doc.data() as Map<String, dynamic>)
+          .toList();
     } catch (e) {
       throw Exception('Error al obtener las fotos del usuario: $e');
     }
@@ -81,6 +86,36 @@ class FirestoreService {
       });
     } catch (e) {
       throw Exception('Error al actualizar el estado de la foto: $e');
+    }
+  }
+
+  // Obtener todas las fotos
+  Future<List<Map<String, dynamic>>> getAllPhotos() async {
+    try {
+      QuerySnapshot snapshot = await _firestore.collection('Fotos').get();
+      return snapshot.docs
+          .map((doc) => doc.data() as Map<String, dynamic>)
+          .toList();
+    } catch (e) {
+      throw Exception('Error al obtener todas las fotos: $e');
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> getPendingPhotos() async {
+    try {
+      final snapshot =
+          await _firestore
+              .collection('Fotos')
+              .where('status', isEqualTo: 'pendiente')
+              .get();
+
+      return snapshot.docs.map((doc) {
+        final data = doc.data() as Map<String, dynamic>;
+        data['photoId'] = doc.id;
+        return data;
+      }).toList();
+    } catch (e) {
+      throw Exception('Error al obtener las fotos pendientes: $e');
     }
   }
 }

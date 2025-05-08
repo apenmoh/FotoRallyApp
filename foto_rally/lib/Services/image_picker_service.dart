@@ -49,5 +49,4 @@ class ImagePickerService {
   Future<File?> openGallery() async {
     return await pickImage(source: ImageSource.gallery);
   }
-
 }

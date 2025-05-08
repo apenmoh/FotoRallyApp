@@ -3,13 +3,13 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:foto_rally/Services/auth_service.dart';
 import 'package:foto_rally/Widgets/Admin/Aceptar_Alta.dart';
 import 'package:foto_rally/Widgets/Admin/Aceptar_Baja.dart';
-import 'package:foto_rally/Widgets/Admin/Validar_Fotos.dart';
 import 'package:foto_rally/pages/Galeria.dart';
 import 'package:foto_rally/pages/Home.dart';
 import 'package:foto_rally/pages/LogIn.dart';
 import 'package:foto_rally/pages/Perfil.dart';
 import 'package:foto_rally/pages/SignUp.dart';
 import 'package:foto_rally/pages/SubirFoto.dart';
+import 'package:foto_rally/pages/ValidatePhoto.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -58,9 +58,9 @@ class _MyAppState extends State<MyApp> {
             '/home': (context) => Home(),
             '/alta': (context) => Alta(),
             '/baja': (context) => Baja(),
-            '/validar': (context) => ValidarFotos(),
             '/subir_foto': (context) => SubirFoto(),
             '/perfil': (context) => Perfil(),
+            '/validate': (context) => ValidatePhoto(),
           },
         );
   }

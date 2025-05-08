@@ -75,6 +75,6 @@ class Lista extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return UsuariosCard(usuarios: usuarios,baja: true);
+    return UsuariosCard(usuarios: usuarios, baja: true);
   }
 }
