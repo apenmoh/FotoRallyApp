@@ -11,9 +11,12 @@ class PhotoCard extends StatelessWidget {
   final String imagenUrl;
   final String category;
   final String descripcion;
+  final String status;
   final void Function(String)? onAccept;
   final void Function(String)? onDeny;
+  final void Function(String)? onDelete;
   final bool showActions;
+  final bool isParticipantGallery;
 
   final firestoreService = FirestoreService();
   final alertService = AlertService();
@@ -26,9 +29,12 @@ class PhotoCard extends StatelessWidget {
     required this.user,
     required this.imagenUrl,
     required this.category,
+    required this.status,
     required this.descripcion,
+    required this.isParticipantGallery,
     this.onAccept,
     this.onDeny,
+    this.onDelete,
     this.showActions = true,
   });
 
@@ -93,29 +99,61 @@ class PhotoCard extends StatelessWidget {
                 if (showActions) ...[
                   SizedBox(height: 16),
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
+                    mainAxisAlignment:
+                        isParticipantGallery
+                            ? MainAxisAlignment.spaceBetween
+                            : MainAxisAlignment.end,
                     children: [
-                      CustomButton(
-                        onPressed:
-                            () => _handleStatusChange(context, 'rechazada'),
-                        text: "Rechazar",
-                        backgroundColor: Colors.red,
-                        textColor: Colors.white,
-                        borderRadius: 20,
-                        width: 100,
-                        height: 30,
-                      ),
-                      SizedBox(width: 12),
-                      CustomButton(
-                        onPressed:
-                            () => _handleStatusChange(context, 'aprobada'),
-                        text: "Aceptar",
-                        backgroundColor: Colors.green,
-                        textColor: Colors.white,
-                        borderRadius: 20,
-                        width: 100,
-                        height: 30,
-                      ),
+                      if (isParticipantGallery) ...[
+                        Container(
+                          alignment: Alignment.bottomLeft,
+                          padding: const EdgeInsets.only(right: 8),
+                          child: Text(
+                            status.toUpperCase(),
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 17,
+                              color:
+                                  status == 'aprobada'
+                                      ? Colors.green
+                                      : status == 'rechazada'
+                                      ? Colors.red
+                                      : Colors.orange,
+                            ),
+                          ),
+                        ),
+                        CustomButton(
+                          onPressed: () => onDelete?.call(id),
+                          text: "Eliminar",
+                          backgroundColor: Colors.red,
+                          textColor: Colors.white,
+                          borderRadius: 10,
+                          width: 100,
+                          height: 30,
+                        ),
+                      ] else ...[
+                        CustomButton(
+                          onPressed:
+                              () => _handleStatusChange(context, 'rechazada'),
+                          text: "Rechazar",
+                          backgroundColor: Colors.red,
+                          textColor: Colors.white,
+                          borderRadius: 10,
+                          width: 100,
+                          height: 30,
+                        ),
+                        SizedBox(width: 12),
+                        CustomButton(
+                          onPressed:
+                              () => _handleStatusChange(context, 'aprobada'),
+                          text: "Aceptar",
+                          backgroundColor: Colors.green,
+                          textColor: Colors.white,
+                          borderRadius: 10,
+                          width: 100,
+                          height: 30,
+                        ),
+                      ],
                     ],
                   ),
                 ],

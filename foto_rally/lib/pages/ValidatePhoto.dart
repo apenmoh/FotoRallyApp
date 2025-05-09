@@ -85,8 +85,10 @@ class _ValidatePhotoState extends State<ValidatePhoto> {
                     imagenUrl: foto['url'],
                     category: foto['category'],
                     descripcion: foto['description'],
+                    status: foto['status'],
                     onAccept: _removePhoto,
                     onDeny: _removePhoto,
+                    isParticipantGallery: false,
                   );
                 },
               );

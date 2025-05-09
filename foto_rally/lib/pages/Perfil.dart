@@ -82,7 +82,7 @@ class _PerfilState extends State<Perfil> {
             children: [
               CustomButton(
                 onPressed: () {
-                  Navigator.pushNamed(context, '/galeria');
+                  Navigator.pushNamed(context, '/galeria_participante');
                 },
                 text: "Ver Mis Fotos",
                 backgroundColor: Color(0xFF047857),

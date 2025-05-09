@@ -67,7 +67,7 @@ class FirestoreService {
     try {
       QuerySnapshot snapshot =
           await _firestore
-              .collection('photos')
+              .collection('Fotos')
               .where('userId', isEqualTo: userId)
               .get();
       return snapshot.docs
@@ -116,6 +116,15 @@ class FirestoreService {
       }).toList();
     } catch (e) {
       throw Exception('Error al obtener las fotos pendientes: $e');
+    }
+  }
+
+  // Eliminar una foto
+  Future<void> deletePhoto(String photoId) async {
+    try {
+      await _firestore.collection('Fotos').doc(photoId).delete();
+    } catch (e) {
+      throw Exception('Error al eliminar la foto: $e');
     }
   }
 }
