@@ -15,6 +15,7 @@ class PhotoCard extends StatelessWidget {
   final void Function(String)? onAccept;
   final void Function(String)? onDeny;
   final void Function(String)? onDelete;
+  final void Function(String)? onVote;
   final bool showActions;
   final bool isParticipantGallery;
 
@@ -35,6 +36,7 @@ class PhotoCard extends StatelessWidget {
     this.onAccept,
     this.onDeny,
     this.onDelete,
+    this.onVote,
     this.showActions = true,
   });
 
@@ -115,7 +117,7 @@ class PhotoCard extends StatelessWidget {
                               fontSize: 17,
                               color:
                                   status == 'aprobada'
-                                      ? Colors.green
+                                      ? Color(0xFF047857)
                                       : status == 'rechazada'
                                       ? Colors.red
                                       : Colors.orange,
@@ -147,13 +149,39 @@ class PhotoCard extends StatelessWidget {
                           onPressed:
                               () => _handleStatusChange(context, 'aprobada'),
                           text: "Aceptar",
-                          backgroundColor: Colors.green,
+                          backgroundColor: Color(0xFF047857),
                           textColor: Colors.white,
                           borderRadius: 10,
                           width: 100,
                           height: 30,
                         ),
                       ],
+                    ],
+                  ),
+                ] else ...[
+                  SizedBox(height: 16),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      CustomButton(
+                        onPressed: () {},
+                        text: "Ver perfil",
+                        backgroundColor: Color(0xFF047857),
+                        textColor: Colors.white,
+                        borderRadius: 15,
+                        width: 100,
+                        height: 40,
+                      ),
+                      SizedBox(width: 10),
+                      CustomButton(
+                        onPressed: () {},
+                        text: "Votar",
+                        backgroundColor: Colors.red,
+                        textColor: Colors.white,
+                        borderRadius: 15,
+                        width: 100,
+                        height: 40,
+                      ),
                     ],
                   ),
                 ],
