@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:foto_rally/Services/alert_service.dart';
 import 'package:foto_rally/Services/auth_service.dart';
 import 'package:foto_rally/Services/firestore_service.dart';
 import 'package:foto_rally/Widgets/CustomButton.dart';
@@ -15,6 +16,7 @@ class Login extends StatefulWidget {
 class _LoginState extends State<Login> {
   final FirestoreService _firestoreService = FirestoreService();
   final AuthService _authService = AuthService();
+  final AlertService _alertService = AlertService();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
@@ -32,7 +34,7 @@ class _LoginState extends State<Login> {
             fontWeight: FontWeight.bold,
           ),
         ),
-        backgroundColor: Colors.blue[600],
+        backgroundColor: Color(0xFF1A56DB),
       ),
       backgroundColor: Colors.grey[100],
       body: FutureBuilder<DocumentSnapshot>(
@@ -139,7 +141,7 @@ class _LoginState extends State<Login> {
                         "A continuación se muestran las normas y reglas del rally para este año:",
                         style: TextStyle(fontSize: 15.0),
                       ),
-                      SizedBox(height: 10.0),
+                      SizedBox(height: 30.0),
 
                       Container(
                         height: 170,
@@ -167,29 +169,7 @@ class _LoginState extends State<Login> {
                     ],
                   ),
                 ),
-
-                SizedBox(height: 30.0),
-                Center(
-                  child: Text(
-                    "¿Quieres Ver las fotos y votar?",
-                    style: TextStyle(
-                      fontSize: 20.0,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-                CustomButton(
-                  onPressed: () {
-                    Navigator.pushNamed(context, '/galeria');
-                  },
-                  text: "Ver Galería",
-                  backgroundColor: Color(0xFF047857),
-                  textColor: Colors.white,
-                  width: 350,
-                  height: 80,
-                  borderRadius: 15.0,
-                ),
-                SizedBox(height: 30.0),
+                SizedBox(height: 50.0),
                 Center(
                   child: Text(
                     "¿Quieres Participar?",
@@ -262,55 +242,28 @@ class _LoginState extends State<Login> {
 
     switch (mensaje) {
       case 'Usuraio No encontrado':
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text("ERROR DE INICIO SESION"),
-            backgroundColor: Colors.red,
-            duration: Duration(seconds: 3),
-          ),
-        );
+        _alertService.error(context, "Error al iniciar sesión: Usuario no encontrado.");
         break;
       case 'Participante_Activo':
         Navigator.pushReplacementNamed(context, '/home');
         break;
       case 'Participante_Pendiente':
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text("USUARIO PENDIENTE DE DAR DE ALTA"),
-            backgroundColor: Colors.orange,
-            duration: Duration(seconds: 3),
-          ),
-        );
+        _alertService.error(context, "Usuario pendiente de aprobación.");
         break;
       case 'Participante_Inactivo':
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text("USUARIO INACTIVO"),
-            backgroundColor: Colors.orange,
-            duration: Duration(seconds: 3),
-          ),
-        );
+        _alertService.error(context, "Usuario Inactivo.");
         break;
       case 'Admin_Activo':
         Navigator.pushReplacementNamed(context, '/home');
         break;
       case 'Usuario no encontrado en Participantes ni Administradores.':
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text("Email o Password incorrectos"),
-            backgroundColor: Colors.red,
-            duration: Duration(seconds: 3),
-          ),
-        );
+        _alertService.error(context, "Correo o contraseña incorrecta.");
         break;
       case 'Error inesperado.':
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text("Error al iniciar sesión"),
-            backgroundColor: Colors.red,
-            duration: Duration(seconds: 3),
-          ),
-        );
+       _alertService.error(context, "Error al iniciar sesion.");
+        break;
+      default:
+        _alertService.error(context, "Error al iniciar sesión: $mensaje");
         break;
     }
   }

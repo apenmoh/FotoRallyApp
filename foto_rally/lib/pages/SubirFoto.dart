@@ -146,12 +146,13 @@ class _SubirFotoState extends State<SubirFoto> {
             'category': categoriaController.text,
             'description': descripcionController.text, 
             'theme': theme, 
+            'votes': 0,
             'location': localidadController.text,
           };
 
           await firestoreService.addPhoto(photoData);
           clearAll();
-          alertService.success(context, 'Foto subida con éxito');
+          alertService.success(context, 'Solicitud de subida de foto enviada correctamente.');
         } else {
           alertService.error(context, 'Error al subir la foto');
         }

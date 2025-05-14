@@ -48,7 +48,7 @@ class _Home_ParticipanteState extends State<Home_Participante> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Home'),
+        title: Text('Home', style: TextStyle(color: Colors.white)),
         centerTitle: true,
         backgroundColor: Color(0xFF1A56DB),
       ),
@@ -111,14 +111,6 @@ class _Home_ParticipanteState extends State<Home_Participante> {
                     text: "Ver Galería",
                     onPressed: () {
                       Navigator.pushNamed(context, '/galeria');
-                    },
-                  ),
-                  Divider(color: Colors.white70),
-                  Opcion(
-                    icon: Icons.person_off,
-                    text: "Solicitar Baja",
-                    onPressed: () {
-                      Navigator.pushNamed(context, '/validar');
                     },
                   ),
                   Divider(color: Colors.white70),

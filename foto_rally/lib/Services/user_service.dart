@@ -134,4 +134,50 @@ class UserService {
       print('Error al incrementar el contador de fotos: $e');
     }
   }
+
+  // Decrement user photo count
+  Future<void> decrementUserPhotoCount(String uid) async {
+    try {
+      await _firestore.collection('Participantes').doc(uid).update({
+        'fotosCount': FieldValue.increment(-1),
+      });
+    } catch (e) {
+      print('Error al decrementar el contador de fotos: $e');
+    }
+  }
+  // Incrementar el contador de votos de un usuario
+  Future<void> incrementUserVoteCount(String uid) async {
+    try {
+      await _firestore.collection('Participantes').doc(uid).update({
+        'voteCount': FieldValue.increment(1),
+      });
+    } catch (e) {
+      print('Error al incrementar el contador de votos: $e');
+    }
+  }
+  // Decrementar el contador de votos de un usuario
+  Future<void> decrementUserVoteCount(String uid) async {
+    try {
+      await _firestore.collection('Participantes').doc(uid).update({
+        'voteCount': FieldValue.increment(-1),
+      });
+    } catch (e) {
+      print('Error al decrementar el contador de votos: $e');
+    }
+  }
+  // Obtener el contador de votos de un usuario
+  Future<int> getUserVoteCount(String uid) async {
+    try {
+      DocumentSnapshot doc =
+          await _firestore.collection('Participantes').doc(uid).get();
+      if (doc.exists) {
+        return doc['voteCount'] ?? 0;
+      } else {
+        return 0;
+      }
+    } catch (e) {
+      print('Error al obtener el contador de votos del usuario: $e');
+      return 0;
+    }
+  }
 }

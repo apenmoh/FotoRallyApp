@@ -89,15 +89,31 @@ class FirestoreService {
     }
   }
 
-  // Obtener todas las fotos
-  Future<List<Map<String, dynamic>>> getAllPhotos() async {
+  // Obtener todas las fotos con estado 'aprobada'
+  Future<List<Map<String, dynamic>>> getApprovedPhotos() async {
     try {
-      QuerySnapshot snapshot = await _firestore.collection('Fotos').get();
+      QuerySnapshot snapshot =
+          await _firestore.collection('Fotos').where('status', isEqualTo: 'aprobada').get();
       return snapshot.docs
           .map((doc) => doc.data() as Map<String, dynamic>)
           .toList();
     } catch (e) {
-      throw Exception('Error al obtener todas las fotos: $e');
+      throw Exception('Error al obtener las fotos aprobadas: $e');
+    }
+  }
+
+  // Obtener Foto por ID
+  Future<Map<String, dynamic>?> getPhotoById(String photoId) async {
+    try {
+      DocumentSnapshot snapshot =
+          await _firestore.collection('Fotos').doc(photoId).get();
+      if (snapshot.exists) {
+        return snapshot.data() as Map<String, dynamic>;
+      } else {
+        return null;
+      }
+    } catch (e) {
+      throw Exception('Error al obtener la foto: $e');
     }
   }
 
@@ -123,8 +139,61 @@ class FirestoreService {
   Future<void> deletePhoto(String photoId) async {
     try {
       await _firestore.collection('Fotos').doc(photoId).delete();
+      final userId = await userService.getUserId();
+      await userService.decrementUserPhotoCount(userId);
     } catch (e) {
       throw Exception('Error al eliminar la foto: $e');
     }
   }
+
+  // Votar una Foto
+  Future<void> votePhoto(String photoId, String userId) async {
+    try {
+      // Verificar si el usuario ya ha votado por esta foto
+      final existingVote = await _firestore
+          .collection('Votos')
+          .where('voterId', isEqualTo: userId)
+          .where('photoId', isEqualTo: photoId)
+          .get();
+      if (existingVote.docs.isNotEmpty) {
+        throw Exception('El usuario ya ha votado por esta foto.');
+      }
+      //Verificar que el user puede votar
+      final voteCount = await userService.getUserVoteCount(userId);
+      final rules = await getRallyRules();
+      if (voteCount >= rules['voteLimit']) {
+        throw Exception('El usuario ha alcanzado el límite de votos.');
+      }
+
+      final doc = await _firestore.collection('Votos').doc();
+      final vote = {
+        'id':doc.id,
+        'voterId': userId,
+        'photoId': photoId,
+        'voteDate':Timestamp.fromDate(DateTime.now()),
+      };
+      await doc.set(vote);
+
+      // Actualizar el contador de votos del usuario
+      await userService.incrementUserVoteCount(userId);
+    } catch (e) {
+      throw Exception('Error al votar la foto: $e');
+    }
+  }
+
+  // Obtener votos de una foto ( el vote es un campo en la tabla de Fotos)
+  Future<int> getPhotoVotes(String photoId) async {
+  try {
+    final snapshot = await _firestore.collection('Fotos').doc(photoId).get();
+    if (snapshot.exists) {
+      final data = snapshot.data() as Map<String, dynamic>;
+      return data['votes'] ?? 0;
+    } else {
+      throw Exception('La foto con ID $photoId no existe.');
+    }
+  } catch (e) {
+    throw Exception('Error al obtener los votos de la foto: $e');
+  }
+}
+  
 }

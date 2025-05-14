@@ -32,8 +32,7 @@ class _GaleriaParticipanteState extends State<Galeria> {
     setState(() {
       isLoading = true;
     });
-    alertService.error(context, "Error al obtener el ID del usuario.");
-    photosFuture = firestoreService.getAllPhotos();
+    photosFuture = firestoreService.getApprovedPhotos();
     photosFuture.then((fotos) {
       setState(() {
         photos = fotos;
@@ -102,6 +101,8 @@ class _GaleriaParticipanteState extends State<Galeria> {
                     descripcion: photo["description"],
                     isParticipantGallery: false,
                     showActions: false,
+                    votes: photo["votes"] ?? 0,
+                    onVote: (photoId,userId) => VotePhoto(photoId) ,
                   );
                 },
               );
@@ -110,5 +111,13 @@ class _GaleriaParticipanteState extends State<Galeria> {
         },
       ),
     );
+  }
+  void VotePhoto(String id) async {
+    try {
+      await firestoreService.votePhoto();
+      alertService.success(context, "Voto registrado correctamente.");
+    } catch (e) {
+      alertService.error(context, "Error al registrar el voto: $e");
+    }
   }
 }

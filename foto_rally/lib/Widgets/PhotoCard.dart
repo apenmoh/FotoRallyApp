@@ -12,6 +12,7 @@ class PhotoCard extends StatelessWidget {
   final String category;
   final String descripcion;
   final String status;
+  final int votes;
   final void Function(String)? onAccept;
   final void Function(String)? onDeny;
   final void Function(String)? onDelete;
@@ -33,6 +34,7 @@ class PhotoCard extends StatelessWidget {
     required this.status,
     required this.descripcion,
     required this.isParticipantGallery,
+    this.votes = 0,
     this.onAccept,
     this.onDeny,
     this.onDelete,
@@ -161,26 +163,39 @@ class PhotoCard extends StatelessWidget {
                 ] else ...[
                   SizedBox(height: 16),
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween, // Space between votes and buttons
                     children: [
-                      CustomButton(
-                        onPressed: () {},
-                        text: "Ver perfil",
-                        backgroundColor: Color(0xFF047857),
-                        textColor: Colors.white,
-                        borderRadius: 15,
-                        width: 100,
-                        height: 40,
+                      // Votes on the left
+                      Text(
+                        "$votes votos",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 17,
+                        ),
                       ),
-                      SizedBox(width: 10),
-                      CustomButton(
-                        onPressed: () {},
-                        text: "Votar",
-                        backgroundColor: Colors.red,
-                        textColor: Colors.white,
-                        borderRadius: 15,
-                        width: 100,
-                        height: 40,
+                      // Buttons on the right
+                      Row(
+                        children: [
+                          CustomButton(
+                            onPressed: () {},
+                            text: "Ver perfil",
+                            backgroundColor: Color(0xFF047857),
+                            textColor: Colors.white,
+                            borderRadius: 15,
+                            width: 100,
+                            height: 40,
+                          ),
+                          SizedBox(width: 10), // Space between buttons
+                          CustomButton(
+                            onPressed: () {},
+                            text: "Votar",
+                            backgroundColor: Colors.red,
+                            textColor: Colors.white,
+                            borderRadius: 15,
+                            width: 120,
+                            height: 30,
+                          ),
+                        ],
                       ),
                     ],
                   ),

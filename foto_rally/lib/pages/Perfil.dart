@@ -65,9 +65,10 @@ class _PerfilState extends State<Perfil> {
       appBar: AppBar(
         title: const Text('Perfil'),
         centerTitle: true,
+        backgroundColor: Color(0xFF1A56DB),
         actions: [
           IconButton(
-            icon: const Icon(Icons.logout),
+            icon:  Icon(Icons.logout,color: Colors.white,),
             onPressed: () {
               logut();
             },

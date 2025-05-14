@@ -22,7 +22,6 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Home'), centerTitle: true),
       body: FutureBuilder<Map<String, Object>>(
         future: userFuture,
         builder: (context, snapshot) {

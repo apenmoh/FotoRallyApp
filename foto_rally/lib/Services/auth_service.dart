@@ -60,8 +60,10 @@ class AuthService {
       // Si no es ni participante ni administrador
       return 'Usuario no encontrado en Participantes ni Administradores.';
     } on FirebaseAuthException catch (e) {
-      throw Exception(_handleAuthError(e.code));
+      return _handleAuthError(e.code);
     }
+    // Default return in case of unexpected behavior
+    return 'Error inesperado.';
   }
 
   Future<UserCredential?> register(
@@ -87,13 +89,14 @@ class AuthService {
         "status": "activo",
         "baja": false,
         "fotoCount": 0,
+        "voteCount": 0,
         "createdAt": DateTime.now(),
       };
       await userService.saveUser(userCredential.user!.uid, userData);
 
       return userCredential;
     } on FirebaseAuthException catch (e) {
-      throw Exception(_handleAuthError(e.code));
+      _handleAuthError(e.code);
     }
   }
 

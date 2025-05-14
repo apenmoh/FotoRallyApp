@@ -29,7 +29,7 @@ class CustomButton extends StatelessWidget {
       style: ElevatedButton.styleFrom(
         backgroundColor: backgroundColor,
         foregroundColor: textColor,
-        padding: EdgeInsets.all(10.0),
+        padding: EdgeInsets.all(5.0),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(borderRadius),
         ),
@@ -40,7 +40,7 @@ class CustomButton extends StatelessWidget {
         text,
         style: TextStyle(
           color: textColor,
-          fontSize: 20.0,
+          fontSize: 18.0,
           fontWeight: FontWeight.bold,
         ),
       ),
