@@ -19,14 +19,8 @@ workflows:
             echo "Modifying existing Podfile..."
             sed -i.bak "s/platform :ios, .*/platform :ios, '13.0'/" ios/Podfile
           else
-            echo "Creating minimal Podfile with iOS 13.0"
-            cat <<EOF > ios/Podfile
-platform :ios, '13.0'
-use_frameworks!
-target 'Runner' do
-  flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
-end
-EOF
+            echo "Creating Podfile with iOS 13.0 support..."
+            printf "platform :ios, '13.0'\nuse_frameworks!\ntarget 'Runner' do\n  flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))\nend\n" > ios/Podfile
           fi
 
       - name: Install CocoaPods dependencies
