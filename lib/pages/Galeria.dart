@@ -102,7 +102,7 @@ class _GaleriaParticipanteState extends State<Galeria> {
                     isParticipantGallery: false,
                     showActions: false,
                     votes: photo["votes"] ?? 0,
-                    onVote: (photoId,userId) => VotePhoto(photoId) ,
+                    onVote: (photoId, userId) => VotePhoto(photoId, userId),
                   );
                 },
               );
@@ -112,9 +112,10 @@ class _GaleriaParticipanteState extends State<Galeria> {
       ),
     );
   }
-  void VotePhoto(String id) async {
+
+  void VotePhoto(String id, String userId) async {
     try {
-      await firestoreService.votePhoto();
+      await firestoreService.votePhoto(id, userId);
       alertService.success(context, "Voto registrado correctamente.");
     } catch (e) {
       alertService.error(context, "Error al registrar el voto: $e");

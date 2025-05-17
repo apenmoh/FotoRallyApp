@@ -16,7 +16,7 @@ class PhotoCard extends StatelessWidget {
   final void Function(String)? onAccept;
   final void Function(String)? onDeny;
   final void Function(String)? onDelete;
-  final void Function(String)? onVote;
+  final void Function(String, String)? onVote;
   final bool showActions;
   final bool isParticipantGallery;
 
@@ -163,7 +163,9 @@ class PhotoCard extends StatelessWidget {
                 ] else ...[
                   SizedBox(height: 16),
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween, // Space between votes and buttons
+                    mainAxisAlignment:
+                        MainAxisAlignment
+                            .spaceBetween, // Space between votes and buttons
                     children: [
                       // Votes on the left
                       Text(
