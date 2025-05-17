@@ -1,0 +1,48 @@
+workflows:
+  ios-release-workflow:
+    name: iOS Release Build
+    max_build_duration: 60
+    environment:
+      flutter: stable
+      xcode: latest
+      cocoapods: default
+    scripts:
+      - name: Get Flutter dependencies
+        script: |
+          flutter pub get
+
+      - name: Set iOS deployment target to 13.0
+        script: |
+          echo "Checking Podfile for platform setting..."
+          if [ -f ios/Podfile ]; then
+            sed -i.bak 's/platform :ios, .*/platform :ios, \'13.0\'/' ios/Podfile
+          else
+            echo "Creating minimal Podfile with iOS 13.0"
+            echo "platform :ios, '13.0'" > ios/Podfile
+            echo "use_frameworks!" >> ios/Podfile
+            echo "target 'Runner' do" >> ios/Podfile
+            echo "  flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))" >> ios/Podfile
+            echo "end" >> ios/Podfile
+          fi
+
+      - name: Install CocoaPods dependencies
+        script: |
+          cd ios
+          pod install
+          cd ..
+
+      - name: Build iOS app
+        script: |
+          flutter build ios --release --no-codesign
+
+    artifacts:
+      - build/ios/iphoneos/*.app
+      - build/ios/ipa/*.ipa
+
+    publishing:
+      email:
+        recipients:
+          - tu-correo@ejemplo.com
+        notify:
+          success: true
+          failure: true
