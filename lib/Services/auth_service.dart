@@ -86,7 +86,7 @@ class AuthService {
         "email": email,
         "localidad": localidad,
         "userId": userCredential.user?.uid,
-        "status": "activo",
+        "status": "pendiente",
         "baja": false,
         "fotoCount": 0,
         "voteCount": 0,

@@ -19,6 +19,8 @@ class PhotoCard extends StatelessWidget {
   final void Function(String, String)? onVote;
   final bool showActions;
   final bool isParticipantGallery;
+  final bool photoOwner;
+  
 
   final firestoreService = FirestoreService();
   final alertService = AlertService();
@@ -34,6 +36,7 @@ class PhotoCard extends StatelessWidget {
     required this.status,
     required this.descripcion,
     required this.isParticipantGallery,
+    this.photoOwner = true,
     this.votes = 0,
     this.onAccept,
     this.onDeny,
@@ -111,19 +114,32 @@ class PhotoCard extends StatelessWidget {
                       if (isParticipantGallery) ...[
                         Container(
                           alignment: Alignment.bottomLeft,
-                          padding: const EdgeInsets.only(right: 8),
-                          child: Text(
-                            status.toUpperCase(),
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 17,
-                              color:
-                                  status == 'aprobada'
-                                      ? Color(0xFF047857)
-                                      : status == 'rechazada'
-                                      ? Colors.red
-                                      : Colors.orange,
-                            ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                status.toUpperCase(),
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 17,
+                                  color:
+                                      status == 'aprobada'
+                                          ? Color(0xFF047857)
+                                          : status == 'rechazada'
+                                          ? Colors.red
+                                          : Colors.orange,
+                                ),
+                              ),
+                              if(status == 'aprobada')
+                              Text(
+                                "Votada por ${votes} personas",
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 17,
+                                  color: Colors.black54,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                         CustomButton(
@@ -178,18 +194,26 @@ class PhotoCard extends StatelessWidget {
                       // Buttons on the right
                       Row(
                         children: [
+                          if(photoOwner)
                           CustomButton(
-                            onPressed: () {},
-                            text: "Ver perfil",
+                            onPressed: () {
+                              // Navigate to user profile
+                              Navigator.pushNamed(
+                                context,
+                                '/galeria_participante',
+                              );
+                            },
+                            text: "Ver Galería",
                             backgroundColor: Color(0xFF047857),
                             textColor: Colors.white,
                             borderRadius: 15,
                             width: 100,
                             height: 40,
                           ),
-                          SizedBox(width: 10), // Space between buttons
-                          CustomButton(
-                            onPressed: () {},
+                          SizedBox(width: 10),
+                          if (!photoOwner)
+                            CustomButton(
+                            onPressed: () => onVote?.call(id, user['userId']),
                             text: "Votar",
                             backgroundColor: Colors.red,
                             textColor: Colors.white,

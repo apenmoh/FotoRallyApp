@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:foto_rally/Services/alert_service.dart';
 import 'package:foto_rally/Services/auth_service.dart';
 import 'package:foto_rally/Services/user_service.dart';
 import 'package:foto_rally/Widgets/CustomButton.dart';
@@ -14,6 +15,7 @@ class Perfil extends StatefulWidget {
 class _PerfilState extends State<Perfil> {
   AuthService authService = AuthService();
   UserService userService = UserService();
+  AlertService alertService = AlertService();
   late String userId = '';
   late Map<String, dynamic> userData = {};
   bool isLoading = true;
@@ -45,13 +47,7 @@ class _PerfilState extends State<Perfil> {
       setState(() {
         isLoading = false;
       });
-      print('Error obteniendo userData: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Error al cargar los datos: $e'),
-          duration: Duration(seconds: 2),
-        ),
-      );
+      alertService.error(context, "Error al cargar los datos: $e");
     }
     print('UserData: $userData');
   }
@@ -140,38 +136,18 @@ class _PerfilState extends State<Perfil> {
   void guardarDatos() async {
     try {
       await userService.updateUser(userId, userData);
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Datos guardados correctamente'),
-          duration: Duration(seconds: 2),
-        ),
-      );
+      alertService.success(context, "Datos guardados correctamente");
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Error al guardar los datos'),
-          duration: Duration(seconds: 2),
-        ),
-      );
+      alertService.error(context, "Error al guardar los datos: $e");
     }
   }
 
   void solicitarBaja() async {
     try {
       await userService.updateUserBaja(userId, true);
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Solicitud de baja enviada'),
-          duration: Duration(seconds: 2),
-        ),
-      );
+      alertService.success(context, "Solicitud de baja enviada");
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Error al enviar la solicitud de baja'),
-          duration: Duration(seconds: 2),
-        ),
-      );
+      alertService.error(context, "Error al enviar la solicitud de baja: $e");
     }
   }
 
@@ -193,6 +169,11 @@ class _PerfilState extends State<Perfil> {
                 margin: const EdgeInsets.symmetric(vertical: 8),
                 child: TextFormField(
                   initialValue: value,
+                  onChanged: (newValue) {
+                    setState(() {
+                      userData[label.toLowerCase()] = newValue;
+                    });
+                  },
                   decoration: const InputDecoration(
                     filled: true,
                     fillColor: Colors.white,
@@ -211,11 +192,6 @@ class _PerfilState extends State<Perfil> {
   void logut() async {
     await authService.logout();
     Navigator.pushNamed(context, '/login');
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Sesión cerrada'),
-        duration: Duration(seconds: 2),
-      ),
-    );
+    alertService.success(context,"Sesión cerrada correctamente");
   }
 }

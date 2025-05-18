@@ -105,6 +105,7 @@ class _GaleriaParticipanteState extends State<GaleriaParticipante> {
                 status: photo["status"],
                 category: photo["category"],
                 descripcion: photo["description"],
+                votes: photo["votes"],
                 isParticipantGallery: true,
                 onDelete: (id) => deletePhoto(id),
               );

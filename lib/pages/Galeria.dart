@@ -17,6 +17,7 @@ class _GaleriaParticipanteState extends State<Galeria> {
   UserService userService = UserService();
   AlertService alertService = AlertService();
 
+  String currentUserID = "";
   bool isLoading = true;
   late Future<List<Map<String, dynamic>>> photosFuture;
   List<Map<String, dynamic>> photos = [];
@@ -39,6 +40,7 @@ class _GaleriaParticipanteState extends State<Galeria> {
         isLoading = false;
       });
     });
+    currentUserID = await userService.getUserId();
   }
 
   @override
@@ -101,6 +103,7 @@ class _GaleriaParticipanteState extends State<Galeria> {
                     descripcion: photo["description"],
                     isParticipantGallery: false,
                     showActions: false,
+                    photoOwner: photo["userId"] == currentUserID,
                     votes: photo["votes"] ?? 0,
                     onVote: (photoId, userId) => VotePhoto(photoId, userId),
                   );
@@ -117,6 +120,7 @@ class _GaleriaParticipanteState extends State<Galeria> {
     try {
       await firestoreService.votePhoto(id, userId);
       alertService.success(context, "Voto registrado correctamente.");
+      _loadPhotos();
     } catch (e) {
       alertService.error(context, "Error al registrar el voto: $e");
     }

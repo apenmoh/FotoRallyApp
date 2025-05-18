@@ -159,7 +159,8 @@ class FirestoreService {
         throw Exception('El usuario ya ha votado por esta foto.');
       }
       //Verificar que el user puede votar
-      final voteCount = await userService.getUserVoteCount(userId);
+      final currentUserId = await userService.getUserId();
+      final voteCount = await userService.getUserVoteCount(currentUserId);
       final rules = await getRallyRules();
       if (voteCount >= rules['voteLimit']) {
         throw Exception('El usuario ha alcanzado el límite de votos.');
@@ -168,14 +169,18 @@ class FirestoreService {
       final doc = await _firestore.collection('Votos').doc();
       final vote = {
         'id':doc.id,
-        'voterId': userId,
+        'voterId': currentUserId,
         'photoId': photoId,
         'voteDate':Timestamp.fromDate(DateTime.now()),
       };
       await doc.set(vote);
 
       // Actualizar el contador de votos del usuario
-      await userService.incrementUserVoteCount(userId);
+      await userService.incrementUserVoteCount(currentUserId);
+      // Actualizar el contador de votos de la foto
+      await _firestore.collection('Fotos').doc(photoId).update({
+        'votes': FieldValue.increment(1),
+      });
     } catch (e) {
       throw Exception('Error al votar la foto: $e');
     }
