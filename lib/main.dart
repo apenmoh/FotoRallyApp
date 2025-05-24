@@ -3,6 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:foto_rally/Services/auth_service.dart';
 import 'package:foto_rally/Widgets/Admin/Aceptar_Alta.dart';
 import 'package:foto_rally/Widgets/Admin/Aceptar_Baja.dart';
+import 'package:foto_rally/pages/Configuration.dart';
 import 'package:foto_rally/pages/Galeria.dart';
 import 'package:foto_rally/pages/Galeria_Participante.dart';
 import 'package:foto_rally/pages/Home.dart';
@@ -62,6 +63,7 @@ class _MyAppState extends State<MyApp> {
             '/subir_foto': (context) => SubirFoto(),
             '/perfil': (context) => Perfil(),
             '/validate': (context) => ValidatePhoto(),
+            '/configuracion': (context) => Configuration(), 
             '/galeria_participante': (context) => GaleriaParticipante(),
           },
         );

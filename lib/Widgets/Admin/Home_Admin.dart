@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:foto_rally/Services/auth_service.dart';
 import 'package:foto_rally/Services/user_service.dart';
+import 'package:foto_rally/Widgets/Admin/Admin_TabNav.dart';
 import 'package:foto_rally/Widgets/ParticipantTabNav.dart';
 
 class Home_Admin extends StatefulWidget {
@@ -116,7 +117,7 @@ class _Home_AdminState extends State<Home_Admin> {
                   Opcion(
                     icon: Icons.settings_applications_sharp,
                     text: "Configuración",
-                    onPressed: () {},
+                    onPressed: () { Navigator.pushNamed(context, '/configuracion');},
                   ),
                 ],
               ),
@@ -124,7 +125,7 @@ class _Home_AdminState extends State<Home_Admin> {
           ],
         ),
       ),
-      bottomNavigationBar: ParticipantTabNav(),
+      bottomNavigationBar: AdminTabNav(),
     );
   }
 

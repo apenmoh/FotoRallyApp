@@ -5,6 +5,7 @@ import 'package:foto_rally/Services/firestore_service.dart';
 import 'package:foto_rally/Widgets/CustomButton.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:intl/intl.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -19,6 +20,8 @@ class _LoginState extends State<Login> {
   final AlertService _alertService = AlertService();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+
+  DateFormat dateFormatter = DateFormat('dd/MM/yyyy');
 
   @override
   Widget build(BuildContext context) {
@@ -63,8 +66,14 @@ class _LoginState extends State<Login> {
           }
           
           final data = snapshot.data!.data() as Map<String, dynamic>;
-          final startDate = (data['startDate'] as Timestamp?)?.toDate();
-          final endDate = (data['endDate'] as Timestamp?)?.toDate();
+          
+          final  startDate = (data['startDate'] as Timestamp?)?.toDate() != null
+              ? dateFormatter.format((data['startDate'] as Timestamp).toDate())
+              : null;
+
+          final  endDate = (data['endDate'] as Timestamp?)?.toDate() != null
+              ? dateFormatter.format((data['endDate'] as Timestamp).toDate())
+              : null;
           final photoLimit = data['photoLimit'] as int?;
           final voteLimit = data['voteLimit'] as int?;
           final isRallyActive = data['isRallyActive'] as bool?;
@@ -81,10 +90,10 @@ class _LoginState extends State<Login> {
             rulesList.add('Categorías permitidas: $categoriesString');
           }
           if (startDate != null) {
-            rulesList.add('Fecha de inicio: ${startDate.toString()}');
+            rulesList.add('Fecha de inicio: ${startDate.toString().split(' ')[0]}');
           }
           if (endDate != null) {
-            rulesList.add('Fecha de fin: ${endDate.toString()}');
+            rulesList.add('Fecha de fin: ${endDate.toString().split(' ')[0]}');
           }
           if (photoLimit != null) {
             rulesList.add('Límite de fotos por participante: $photoLimit');

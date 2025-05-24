@@ -21,6 +21,7 @@ class _GaleriaParticipanteState extends State<Galeria> {
   bool isLoading = true;
   late Future<List<Map<String, dynamic>>> photosFuture;
   List<Map<String, dynamic>> photos = [];
+  bool isAdmin = false;
 
   @override
   void initState() {
@@ -40,6 +41,8 @@ class _GaleriaParticipanteState extends State<Galeria> {
         isLoading = false;
       });
     });
+    final user = await userService.getUsuarioLogueado();
+    isAdmin = (user['isAdmin'] ?? false) as bool;
     currentUserID = await userService.getUserId();
   }
 
@@ -103,6 +106,7 @@ class _GaleriaParticipanteState extends State<Galeria> {
                     descripcion: photo["description"],
                     isParticipantGallery: false,
                     showActions: false,
+                    isAdmin: isAdmin,
                     photoOwner: photo["userId"] == currentUserID,
                     votes: photo["votes"] ?? 0,
                     onVote: (photoId, userId) => VotePhoto(photoId, userId),

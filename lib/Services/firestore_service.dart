@@ -17,6 +17,17 @@ class FirestoreService {
     }
   }
 
+  Future<void> updateRallyRules(Map<String, dynamic> rules) async {
+    try {
+      await _firestore
+          .collection('Configuracion')
+          .doc('rallyRules')
+          .set(rules, SetOptions(merge: true));
+    } catch (e) {
+      throw Exception('Error al actualizar las reglas: $e');
+    }
+  }
+
   Future<List<String>> getRallyCategories() async {
     try {
       DocumentSnapshot snapshot =

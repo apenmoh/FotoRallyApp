@@ -20,6 +20,7 @@ class PhotoCard extends StatelessWidget {
   final bool showActions;
   final bool isParticipantGallery;
   final bool photoOwner;
+  final bool isAdmin;
   
 
   final firestoreService = FirestoreService();
@@ -37,6 +38,7 @@ class PhotoCard extends StatelessWidget {
     required this.descripcion,
     required this.isParticipantGallery,
     this.photoOwner = true,
+    this.isAdmin = false,
     this.votes = 0,
     this.onAccept,
     this.onDeny,
@@ -211,7 +213,7 @@ class PhotoCard extends StatelessWidget {
                             height: 40,
                           ),
                           SizedBox(width: 10),
-                          if (!photoOwner)
+                          if (!photoOwner && !isAdmin)
                             CustomButton(
                             onPressed: () => onVote?.call(id, user['userId']),
                             text: "Votar",
