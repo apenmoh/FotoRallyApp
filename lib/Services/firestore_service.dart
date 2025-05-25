@@ -148,13 +148,62 @@ class FirestoreService {
 
   // Eliminar una foto
   Future<void> deletePhoto(String photoId) async {
-    try {
-      await _firestore.collection('Fotos').doc(photoId).delete();
-      final userId = await userService.getUserId();
-      await userService.decrementUserPhotoCount(userId);
-    } catch (e) {
-      throw Exception('Error al eliminar la foto: $e');
+  try {
+    final photoDoc = await _firestore.collection('Fotos').doc(photoId).get();
+
+    if (!photoDoc.exists) {
+      throw Exception('La foto no existe');
     }
+
+    final photoData = photoDoc.data()!;
+    final uploaderId = photoData['userId'] as String;
+
+    // Eliminar la foto
+    await _firestore.collection('Fotos').doc(photoId).delete();
+
+    // Buscar todos los votos asociados a la foto
+    final votesSnapshot = await _firestore
+        .collection('Votos')
+        .where('photoId', isEqualTo: photoId)
+        .get();
+
+    // Obtener los IDs de los votantes únicos
+    final Set<String> voterIds = {};
+
+    for (var voteDoc in votesSnapshot.docs) {
+      final voterId = voteDoc['voterId'] as String;
+      voterIds.add(voterId);
+
+      // Eliminar el voto
+      await voteDoc.reference.delete();
+    }
+
+    // Actualizar el voteCount de cada votante
+    for (final voterId in voterIds) {
+      await updateUserVoteCount(voterId);
+    }
+
+    // Actualizar el fotosCount del usuario que subió la foto
+    await userService.decrementUserPhotoCount(uploaderId);
+
+  } catch (e) {
+    throw Exception('Error al eliminar la foto: $e');
+  }
+}
+
+
+  Future<void> updateUserVoteCount(String userId) async {
+    final votesSnapshot =
+        await _firestore
+            .collection('Votos')
+            .where('voterId', isEqualTo: userId)
+            .get();
+
+    final voteCount = votesSnapshot.size;
+
+    await _firestore.collection('Participantes').doc(userId).update({
+      'voteCount': voteCount,
+    });
   }
 
   // Votar una Foto
@@ -193,7 +242,7 @@ class FirestoreService {
         'votes': FieldValue.increment(1),
       });
     } catch (e) {
-      throw Exception('Error al votar la foto: $e');
+      throw Exception(e.toString());
     }
   }
 

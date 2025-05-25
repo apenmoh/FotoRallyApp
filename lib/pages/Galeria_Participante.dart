@@ -118,11 +118,22 @@ class _GaleriaParticipanteState extends State<GaleriaParticipante> {
 
   void deletePhoto(String id) async {
     try {
+      final confirmed = await alertService.confirm(
+        context,
+        "¿Estás seguro de que deseas eliminar esta foto? Esta acción no se puede deshacer.",
+      );
+      if (!confirmed) return;
+      setState(() {
+        isLoading = true;
+      });
       await firestoreService.deletePhoto(id);
       alertService.success(context, "Foto eliminada correctamente.");
       _loadPhotos();
     } catch (e) {
       alertService.error(context, "Error al eliminar la foto: $e");
+      setState(() {
+        isLoading = false;
+      });
     }
   }
 }

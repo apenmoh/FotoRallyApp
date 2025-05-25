@@ -77,8 +77,6 @@ class _LoginState extends State<Login> {
           final photoLimit = data['photoLimit'] as int?;
           final voteLimit = data['voteLimit'] as int?;
           final isRallyActive = data['isRallyActive'] as bool?;
-          final allowPhotoUploads = data['allowPhotoUploads'] as bool?;
-          final allowVoting = data['allowVoting'] as bool?;
           final allowedCategories = data['allowedCategories'] as List<dynamic>?;
           final theme = data['theme'] as String?;
           final timeFrame = data['timeFrame'] as String?;
@@ -103,15 +101,6 @@ class _LoginState extends State<Login> {
           }
           if (isRallyActive != null) {
             rulesList.add('Estado del rally: ${isRallyActive ? 'Activo' : 'Inactivo'}');
-          }
-          if (allowPhotoUploads != null) {
-            rulesList.add('Subida de fotos: ${allowPhotoUploads ? 'Permitida' : 'No permitida'}');
-          }
-          if (allowVoting != null) {
-            rulesList.add('Votación: ${allowVoting ? 'Permitida' : 'No permitida'}');
-          }
-          if (allowedCategories != null && allowedCategories.isNotEmpty) {
-            rulesList.add('Categorías permitidas: $allowedCategories');
           }
           if (theme != null && theme.isNotEmpty) {
             rulesList.add('Tema del rally: $theme');

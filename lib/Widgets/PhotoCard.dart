@@ -16,7 +16,7 @@ class PhotoCard extends StatelessWidget {
   final void Function(String)? onAccept;
   final void Function(String)? onDeny;
   final void Function(String)? onDelete;
-  final void Function(String, String)? onVote;
+  final void Function(String)? onVote;
   final bool showActions;
   final bool isParticipantGallery;
   final bool photoOwner;
@@ -137,7 +137,7 @@ class PhotoCard extends StatelessWidget {
                                 "Votada por ${votes} personas",
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
-                                  fontSize: 17,
+                                  fontSize: 13,
                                   color: Colors.black54,
                                 ),
                               ),
@@ -205,17 +205,17 @@ class PhotoCard extends StatelessWidget {
                                 '/galeria_participante',
                               );
                             },
-                            text: "Ver Galería",
+                            text: "Galería",
                             backgroundColor: Color(0xFF047857),
                             textColor: Colors.white,
                             borderRadius: 15,
-                            width: 100,
+                            width: 130,
                             height: 40,
                           ),
                           SizedBox(width: 10),
                           if (!photoOwner && !isAdmin)
                             CustomButton(
-                            onPressed: () => onVote?.call(id, user['userId']),
+                            onPressed: () => onVote?.call(id),
                             text: "Votar",
                             backgroundColor: Colors.red,
                             textColor: Colors.white,

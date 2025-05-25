@@ -17,11 +17,11 @@ class _GaleriaParticipanteState extends State<Galeria> {
   UserService userService = UserService();
   AlertService alertService = AlertService();
 
-  String currentUserID = "";
   bool isLoading = true;
   late Future<List<Map<String, dynamic>>> photosFuture;
   List<Map<String, dynamic>> photos = [];
   bool isAdmin = false;
+  Map<String, dynamic> currentUser = {};
 
   @override
   void initState() {
@@ -38,12 +38,15 @@ class _GaleriaParticipanteState extends State<Galeria> {
     photosFuture.then((fotos) {
       setState(() {
         photos = fotos;
-        isLoading = false;
       });
     });
-    final user = await userService.getUsuarioLogueado();
-    isAdmin = (user['isAdmin'] ?? false) as bool;
-    currentUserID = await userService.getUserId();
+    
+    final u = await userService.getUsuarioLogueado();
+    isAdmin = (u['isAdmin'] ?? false) as bool;
+    setState(() {
+      isLoading = false;
+      currentUser = u;
+    });
   }
 
   @override
@@ -107,10 +110,10 @@ class _GaleriaParticipanteState extends State<Galeria> {
                     isParticipantGallery: false,
                     showActions: false,
                     isAdmin: isAdmin,
-                    photoOwner: photo["userId"] == currentUserID,
+                    photoOwner: photo["userId"] == currentUser["userId"],
                     votes: photo["votes"] ?? 0,
-                    onVote: (photoId, userId) => VotePhoto(photoId, userId),
-                  );
+                    onVote: (photoId) => VotePhoto(photoId, currentUser['userId']),
+                    );
                 },
               );
             },
@@ -126,7 +129,7 @@ class _GaleriaParticipanteState extends State<Galeria> {
       alertService.success(context, "Voto registrado correctamente.");
       _loadPhotos();
     } catch (e) {
-      alertService.error(context, "Error al registrar el voto: $e");
+      alertService.error(context, "$e");
     }
   }
 }

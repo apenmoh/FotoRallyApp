@@ -52,6 +52,22 @@ class UserService {
     }
   }
 
+  //Obtener AmdminPorId
+  Future<Map<String, dynamic>> getAdminById(String uid) async {
+    try {
+      DocumentSnapshot doc =
+          await _firestore.collection('Administradores').doc(uid).get();
+      if (doc.exists) {
+        return doc.data() as Map<String, dynamic>;
+      } else {
+        return {};
+      }
+    } catch (e) {
+      print('Error al obtener administrador: $e');
+      return {};
+    }
+  }
+
   Future<void> updateUserStatus(String uid, String status) async {
     try {
       await _firestore.collection('Participantes').doc(uid).update({
