@@ -75,6 +75,13 @@ class _ConfigurationState extends State<Configuration> {
     setState(() {
       isLoading = true;
     });
+    if(_themeController.text.isEmpty ||_voteLimitController.text.isEmpty || _photoLimitController.text.isEmpty) {
+      alertService.error(context, "Los campos Tema, Límite de fotos y Límite de votos son obligatorios.");
+      setState(() {
+        isLoading = false;
+      });
+      return;
+    }
     final rules = {
       'allowPhotoUploads': allowPhotoUploads,
       'allowVoting': allowVoting,

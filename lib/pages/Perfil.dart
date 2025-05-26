@@ -59,7 +59,7 @@ class _PerfilState extends State<Perfil> {
     }
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Perfil'),
+        title: const Text('Perfil',style: TextStyle(color: Colors.white)),
         centerTitle: true,
         backgroundColor: Color(0xFF1A56DB),
         actions: [
@@ -144,6 +144,8 @@ class _PerfilState extends State<Perfil> {
 
   void solicitarBaja() async {
     try {
+      final confirm = await alertService.confirm(context, "Estas seguro de que quieres solicitar la baja? Esto eliminará tu cuenta y todas tus fotos.");
+      if (!confirm) return;
       await userService.updateUserBaja(userId, true);
       alertService.success(context, "Solicitud de baja enviada");
     } catch (e) {

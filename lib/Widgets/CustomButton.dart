@@ -9,6 +9,7 @@ class CustomButton extends StatelessWidget {
   final double height;
   final double borderRadius;
   final double elevation;
+  final Icon icon;
 
   const CustomButton({
     Key? key,
@@ -20,6 +21,7 @@ class CustomButton extends StatelessWidget {
     this.height = 0, // Default height
     required this.borderRadius,
     this.elevation = 5.0,
+    this.icon = const Icon(Icons.check, color: Colors.white),
   }) : super(key: key);
 
   @override
@@ -36,7 +38,8 @@ class CustomButton extends StatelessWidget {
         elevation: elevation,
         fixedSize: Size(width, height),
       ),
-      child: Text(
+      child: 
+      Text(
         text,
         style: TextStyle(
           color: textColor,

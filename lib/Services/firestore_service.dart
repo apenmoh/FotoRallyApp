@@ -216,14 +216,14 @@ class FirestoreService {
           .where('photoId', isEqualTo: photoId)
           .get();
       if (existingVote.docs.isNotEmpty) {
-        throw Exception('El usuario ya ha votado por esta foto.');
+        throw ('Ya has votado esta foto.');
       }
       //Verificar que el user puede votar
       final currentUserId = await userService.getUserId();
       final voteCount = await userService.getUserVoteCount(currentUserId);
       final rules = await getRallyRules();
       if (voteCount >= rules['voteLimit']) {
-        throw Exception('El usuario ha alcanzado el límite de votos.');
+        throw Exception('Has alcanzado el límite de votos.');
       }
 
       final doc = await _firestore.collection('Votos').doc();
@@ -242,7 +242,7 @@ class FirestoreService {
         'votes': FieldValue.increment(1),
       });
     } catch (e) {
-      throw Exception(e.toString());
+      throw (e.toString());
     }
   }
 

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:foto_rally/Services/alert_service.dart';
 import 'package:foto_rally/Widgets/CustomButton.dart';
 import 'package:foto_rally/Services/auth_service.dart';
 
@@ -15,6 +16,8 @@ class _SignUpState extends State<SignUp> {
   final TextEditingController _email = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _localidad = TextEditingController();
+
+  AlertService  alertService = AlertService();
 
   @override
   Widget build(BuildContext context) {
@@ -97,12 +100,7 @@ class _SignUpState extends State<SignUp> {
         _passwordController.text.isEmpty ||
         _nombre.text.isEmpty ||
         _localidad.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text("Todos los campos son obligatorios"),
-          backgroundColor: Colors.red,
-        ),
-      );
+      alertService.error(context, "Por favor, complete todos los campos.");
       return;
     }
 
@@ -115,14 +113,7 @@ class _SignUpState extends State<SignUp> {
       );
 
       if (userCredential != null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              "Solicitud enviada correctamente. Espere a que su solicitud se procese.",
-            ),
-            backgroundColor: Colors.green,
-          ),
-        );
+        alertService.success(context, "Registro exitoso");
 
         // Limpiar campos
         _nombre.clear();
@@ -131,14 +122,11 @@ class _SignUpState extends State<SignUp> {
         _localidad.clear();
 
         Navigator.pushNamed(context, "/login");
+      }else{
+        alertService.error(context, "Usuario existe con ese correo/contraseña Utiliza otra.");
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text("Error al registrar: ${e.toString()}"),
-          backgroundColor: Colors.red,
-        ),
-      );
+      alertService.error(context, "Error al registrarse: $e");
     }
   }
 }

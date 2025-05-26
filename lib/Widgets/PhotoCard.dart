@@ -21,7 +21,6 @@ class PhotoCard extends StatelessWidget {
   final bool isParticipantGallery;
   final bool photoOwner;
   final bool isAdmin;
-  
 
   final firestoreService = FirestoreService();
   final alertService = AlertService();
@@ -54,8 +53,8 @@ class PhotoCard extends StatelessWidget {
         context,
         "Foto ${status == 'aprobada' ? 'aceptada' : 'rechazada'} correctamente.",
       );
-      if (status == 'aprobada' && onAccept != null) onAccept!(id);
-      if (status == 'rechazada' && onDeny != null) onDeny!(id);
+      if (status == 'aprobada') onAccept?.call(id);
+      if (status == 'rechazada') onDeny?.call(id);
     } catch (e) {
       alertService.error(context, "Error al actualizar el estado: $e");
     }
@@ -63,176 +62,215 @@ class PhotoCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final Color primaryColor = const Color(0xFF047857);
+    final Color accentColor = Colors.red;
+    final Color backgroundColor = const Color(0xFFFDF6FF);
+
     return Card(
+      elevation: 4,
       margin: const EdgeInsets.only(bottom: 20),
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-        side: BorderSide(color: Colors.grey),
+        borderRadius: BorderRadius.circular(16),
+        side: BorderSide(color: Colors.grey.shade300, width: 1),
       ),
+      clipBehavior: Clip.antiAlias,
       child: Column(
-        mainAxisSize: MainAxisSize.min,
         children: [
+          // Header: usuario y categoría
           Container(
-            padding: const EdgeInsets.all(12),
-            width: double.infinity,
-            color: const Color(0xFFFDF6FF),
+            color: backgroundColor,
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: Text(
+                    user['nombre'],
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                Text(
+                  category,
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.grey.shade700,
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          // Imagen
+          AspectRatio(
+            aspectRatio: 16 / 9,
+            child: Image.network(
+              imagenUrl,
+              fit: BoxFit.cover,
+              loadingBuilder: (context, child, loadingProgress) =>
+                  loadingProgress == null
+                      ? child
+                      : const Center(child: CircularProgressIndicator()),
+              errorBuilder: (context, error, stackTrace) => Container(
+                color: Colors.grey.shade200,
+                alignment: Alignment.center,
+                child: Icon(Icons.broken_image, color: Colors.grey.shade400, size: 80),
+              ),
+            ),
+          ),
+
+          // Información y botones
+          Container(
+            padding: const EdgeInsets.all(16),
+            color: backgroundColor,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  user['nombre'],
-                  style: TextStyle(fontWeight: FontWeight.bold),
+                  titulo,
+                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
-                SizedBox(height: 4),
-                Text(category),
-              ],
-            ),
-          ),
-          Image.network(
-            imagenUrl,
-            height: 250,
-            width: double.infinity,
-            fit: BoxFit.cover,
-          ),
-          Container(
-            padding: const EdgeInsets.all(12),
-            color: const Color(0xFFFDF6FF),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(titulo, style: TextStyle(fontWeight: FontWeight.bold)),
-                SizedBox(height: 4),
-                Text(location),
-                SizedBox(height: 12),
-                Text(descripcion, style: TextStyle(color: Colors.black54)),
-                if (showActions) ...[
-                  SizedBox(height: 16),
-                  Row(
-                    mainAxisAlignment:
-                        isParticipantGallery
-                            ? MainAxisAlignment.spaceBetween
-                            : MainAxisAlignment.end,
-                    children: [
-                      if (isParticipantGallery) ...[
-                        Container(
-                          alignment: Alignment.bottomLeft,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                status.toUpperCase(),
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 17,
-                                  color:
-                                      status == 'aprobada'
-                                          ? Color(0xFF047857)
-                                          : status == 'rechazada'
-                                          ? Colors.red
-                                          : Colors.orange,
-                                ),
-                              ),
-                              if(status == 'aprobada')
-                              Text(
-                                "Votada por ${votes} personas",
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 13,
-                                  color: Colors.black54,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        CustomButton(
-                          onPressed: () => onDelete?.call(id),
-                          text: "Eliminar",
-                          backgroundColor: Colors.red,
-                          textColor: Colors.white,
-                          borderRadius: 10,
-                          width: 100,
-                          height: 30,
-                        ),
-                      ] else ...[
-                        CustomButton(
-                          onPressed:
-                              () => _handleStatusChange(context, 'rechazada'),
-                          text: "Rechazar",
-                          backgroundColor: Colors.red,
-                          textColor: Colors.white,
-                          borderRadius: 10,
-                          width: 100,
-                          height: 30,
-                        ),
-                        SizedBox(width: 12),
-                        CustomButton(
-                          onPressed:
-                              () => _handleStatusChange(context, 'aprobada'),
-                          text: "Aceptar",
-                          backgroundColor: Color(0xFF047857),
-                          textColor: Colors.white,
-                          borderRadius: 10,
-                          width: 100,
-                          height: 30,
-                        ),
-                      ],
-                    ],
-                  ),
-                ] else ...[
-                  SizedBox(height: 16),
-                  Row(
-                    mainAxisAlignment:
-                        MainAxisAlignment
-                            .spaceBetween, // Space between votes and buttons
-                    children: [
-                      // Votes on the left
-                      Text(
-                        "$votes votos",
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 17,
-                        ),
-                      ),
-                      // Buttons on the right
-                      Row(
-                        children: [
-                          if(photoOwner)
-                          CustomButton(
-                            onPressed: () {
-                              // Navigate to user profile
-                              Navigator.pushNamed(
-                                context,
-                                '/galeria_participante',
-                              );
-                            },
-                            text: "Galería",
-                            backgroundColor: Color(0xFF047857),
-                            textColor: Colors.white,
-                            borderRadius: 15,
-                            width: 130,
-                            height: 40,
-                          ),
-                          SizedBox(width: 10),
-                          if (!photoOwner && !isAdmin)
-                            CustomButton(
-                            onPressed: () => onVote?.call(id),
-                            text: "Votar",
-                            backgroundColor: Colors.red,
-                            textColor: Colors.white,
-                            borderRadius: 15,
-                            width: 120,
-                            height: 30,
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ],
+                const SizedBox(height: 6),
+                Text(
+                  location,
+                  style: TextStyle(fontSize: 14, color: Colors.grey.shade700),
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  descripcion,
+                  style: TextStyle(fontSize: 14, color: Colors.black54),
+                ),
+
+                const SizedBox(height: 20),
+
+                // Acciones
+                if (showActions)
+                  _buildActionButtons(context, primaryColor, accentColor)
+                else
+                  _buildVotingSection(context, primaryColor),
               ],
             ),
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildActionButtons(BuildContext context, Color primary, Color accent) {
+    if (isParticipantGallery) {
+      return Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                status.toUpperCase(),
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                  color: status == 'aprobada'
+                      ? primary
+                      : status == 'rechazada'
+                          ? accent
+                          : Colors.orange.shade700,
+                ),
+              ),
+              if (status == 'aprobada')
+                Padding(
+                  padding: const EdgeInsets.only(top: 4),
+                  child: Text(
+                    "Votada por $votes personas",
+                    style: TextStyle(fontSize: 13, color: Colors.grey.shade600),
+                  ),
+                ),
+            ],
+          ),
+          CustomButton(
+            onPressed: () => onDelete?.call(id),
+            text: "Eliminar",
+            backgroundColor: accent,
+            textColor: Colors.white,
+            borderRadius: 10,
+            width: 100,
+            height: 35,
+          ),
+        ],
+      );
+    } else {
+      return Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          CustomButton(
+            onPressed: () => _handleStatusChange(context, 'rechazada'),
+            text: "Rechazar",
+            backgroundColor: accent,
+            textColor: Colors.white,
+            borderRadius: 10,
+            width: 100,
+            height: 35,
+          ),
+          const SizedBox(width: 12),
+          CustomButton(
+            onPressed: () => _handleStatusChange(context, 'aprobada'),
+            text: "Aceptar",
+            backgroundColor: primary,
+            textColor: Colors.white,
+            borderRadius: 10,
+            width: 100,
+            height: 35,
+          ),
+        ],
+      );
+    }
+  }
+
+  Widget _buildVotingSection(BuildContext context, Color primary) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          "$votes votos",
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 17),
+        ),
+        Row(
+          children: [
+            if (photoOwner)
+              CustomButton(
+                onPressed: () {
+                  Navigator.pushNamed(
+                    context,
+                    '/galeria_participante',
+                    arguments: user['id'],
+                  );
+                },
+                text: "Galería",
+                backgroundColor: primary,
+                textColor: Colors.white,
+                borderRadius: 15,
+                width: 130,
+                height: 40,
+              ),
+            if (!photoOwner && !isAdmin)
+              Padding(
+                padding: const EdgeInsets.only(left: 10),
+                child: CustomButton(
+                  onPressed: () => onVote?.call(id),
+                  text: "Votar",
+                  backgroundColor: Theme.of(context).primaryColor,
+                  textColor: Colors.white,
+                  borderRadius: 15,
+                  width: 120,
+                  height: 40,
+                ),
+              ),
+          ],
+        ),
+      ],
     );
   }
 }

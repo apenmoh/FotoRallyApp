@@ -1,10 +1,6 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:foto_rally/Services/auth_service.dart';
-import 'package:foto_rally/Services/user_service.dart';
 import 'package:foto_rally/Widgets/Admin/Admin_TabNav.dart';
-import 'package:foto_rally/Widgets/ParticipantTabNav.dart';
 
 class Home_Admin extends StatefulWidget {
   const Home_Admin({super.key});
@@ -26,7 +22,7 @@ class _Home_AdminState extends State<Home_Admin> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Home Admin'),
+        title: Text('Home Admin',style: TextStyle(color: Colors.white),),
         centerTitle: true,
         actions: [
           IconButton(

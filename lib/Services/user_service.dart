@@ -124,6 +124,14 @@ class UserService {
     }
   }
 
+  Future<void> deleteUser(String uid) async {
+    try {
+      await _firestore.collection('Participantes').doc(uid).delete();
+    } catch (e) {
+      print('Error al eliminar el usuario: $e');
+    }
+  }
+
   // Obtener la cantidad de fotos de un usuario
   Future<int> getUserPhotoCount(String uid) async {
     try {

@@ -192,7 +192,7 @@ class _SubirFotoState extends State<SubirFoto> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Subir Fotos'),
+        title: Text('Subir Fotos',style: TextStyle(color: Colors.white),),
         centerTitle: true,
         backgroundColor: Color(0xFF1A56DB),
       ),
