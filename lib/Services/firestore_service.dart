@@ -54,7 +54,7 @@ class FirestoreService {
       final rules = await getRallyRules();
       int numFotos = await userService.getUserPhotoCount(id);
 
-      if (numFotos <= rules['photoLimit']) {
+      if (numFotos < rules['photoLimit']) {
         final doc = await _firestore.collection('Fotos').doc();
 
         photoData['photoId'] = doc.id;
@@ -64,12 +64,12 @@ class FirestoreService {
         // Actualizar el contador de fotos del usuario
         await userService.incrementUserPhotoCount(id);
       } else {
-        throw Exception(
+        throw(
           'El usuario ha alcanzado el límite de fotos permitidas.',
         );
       }
     } catch (e) {
-      throw Exception('Error al guardar la foto: $e');
+      throw ('$e');
     }
   }
 

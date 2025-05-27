@@ -204,4 +204,67 @@ class UserService {
       return 0;
     }
   }
+
+  
+  //Obtener top 3 Usuarios con más votos
+ Future<List<Map<String, dynamic>>> getTopParticipantsByVotes() async {
+    try {
+      // 1. Obtener todas las fotos y agrupar votos por userId
+      final QuerySnapshot photosSnapshot =
+          await _firestore.collection('Fotos').where('status', isEqualTo: 'aprobada').get();
+
+      Map<String, int> userVotes = {};
+
+      for (var doc in photosSnapshot.docs) {
+        final data = doc.data() as Map<String, dynamic>;
+        final userId = data['userId'] as String?;
+        final votes = (data['votes'] as num?)?.toInt() ?? 0; // Asegura que los votos sean enteros
+
+        if (userId != null) {
+          userVotes.update(userId, (value) => value + votes, ifAbsent: () => votes);
+        }
+      }
+
+      // 2. Crear una lista de IDs de usuario ordenados por sus votos (de mayor a menor)
+      List<String> sortedUserIds = userVotes.keys.toList()
+        ..sort((a, b) => userVotes[b]!.compareTo(userVotes[a]!));
+
+      // 3. Limitar a los top 3 (o menos si hay menos de 3)
+      List<String> top3UserIds = sortedUserIds.take(3).toList();
+
+      List<Map<String, dynamic>> topParticipants = [];
+
+      // 4. Obtener la información de cada participante del top 3
+      if (top3UserIds.isNotEmpty) {
+        final QuerySnapshot participantsSnapshot = await _firestore
+            .collection('Participantes')
+            .where('userId', whereIn: top3UserIds)
+            .get();
+
+        Map<String, Map<String, dynamic>> participantData = {};
+        for (var doc in participantsSnapshot.docs) {
+          final data = doc.data() as Map<String, dynamic>;
+          participantData[data['userId']] = data;
+        }
+
+        // 5. Construir la lista final con los votos asignados y ordenados
+        for (String userId in top3UserIds) {
+          if (participantData.containsKey(userId)) {
+            final participant = participantData[userId]!;
+            topParticipants.add({
+              'userId': userId,
+              'nombre': participant['nombre'],
+              'localidad': participant['localidad'],
+              'totalVotes': userVotes[userId], // Añadir los votos calculados
+            });
+          }
+        }
+      }
+
+      return topParticipants;
+    } catch (e) {
+      print('Error al obtener top participantes: $e'); // Para depuración
+      throw Exception('No se pudo cargar el leaderboard: $e');
+    }
+  }
 }

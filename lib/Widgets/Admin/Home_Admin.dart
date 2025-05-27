@@ -107,7 +107,7 @@ class _Home_AdminState extends State<Home_Admin> {
                   Opcion(
                     icon: Icons.leaderboard,
                     text: "Ver Estadística",
-                    onPressed: () {},
+                    onPressed: () {Navigator.pushNamed(context, '/estadisticas');},
                   ),
                   Divider(color: Colors.white70),
                   Opcion(

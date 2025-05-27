@@ -27,14 +27,14 @@ class ImagePickerService {
         final fileSize = await file.length();
 
         if (fileSize > maxSizeInBytes) {
-          throw Exception('La imagen excede el límite de 3 MB');
+          throw ('La imagen excede el límite de 3 MB');
         }
 
         return file;
       }
       return null;
     } catch (e) {
-      throw Exception('Error al seleccionar la imagen: $e');
+      throw ('Error al seleccionar la imagen: $e');
     }
   }
 

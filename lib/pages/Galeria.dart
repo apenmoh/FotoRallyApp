@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:foto_rally/Services/alert_service.dart';
 import 'package:foto_rally/Services/firestore_service.dart';
 import 'package:foto_rally/Services/user_service.dart';
-import 'package:foto_rally/Widgets/ParticipantTabNav.dart';
+import 'package:foto_rally/Widgets/TabNavigation.dart';
 import 'package:foto_rally/Widgets/PhotoCard.dart';
 
 class Galeria extends StatefulWidget {

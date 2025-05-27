@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:foto_rally/Services/alert_service.dart';
 import 'package:foto_rally/Services/firestore_service.dart';
 import 'package:foto_rally/Services/user_service.dart';
-import 'package:foto_rally/Widgets/ParticipantTabNav.dart';
+import 'package:foto_rally/Widgets/TabNavigation.dart';
 import 'package:foto_rally/Widgets/PhotoCard.dart';
 
 class GaleriaParticipante extends StatefulWidget {
@@ -76,7 +76,7 @@ class _GaleriaParticipanteState extends State<GaleriaParticipante> {
         backgroundColor: Color(0xFF1A56DB),
         centerTitle: true,
       ),
-      bottomNavigationBar: ParticipantTabNav(),
+      bottomNavigationBar: Tabnavigation(),
       body: FutureBuilder<List<Map<String, dynamic>>>(
         future: photosFuture,
         builder: (context, snapshot) {

@@ -261,7 +261,7 @@ class PhotoCard extends StatelessWidget {
                 child: CustomButton(
                   onPressed: () => onVote?.call(id),
                   text: "Votar",
-                  backgroundColor: Theme.of(context).primaryColor,
+                  backgroundColor: Color(0xFF1E3A8A),
                   textColor: Colors.white,
                   borderRadius: 15,
                   width: 120,

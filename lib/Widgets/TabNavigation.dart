@@ -1,12 +1,40 @@
 import 'package:flutter/material.dart';
+import 'package:foto_rally/Services/user_service.dart';
 
-class ParticipantTabNav extends StatefulWidget {
-  ParticipantTabNav({super.key}); 
+class Tabnavigation extends StatefulWidget {
+  Tabnavigation({super.key}); 
   @override
-  State<ParticipantTabNav> createState() => _ParticipantTabNavState();
+  State<Tabnavigation> createState() => _TabNavigation();  
 }
 
-class _ParticipantTabNavState extends State<ParticipantTabNav> {
+
+
+class _TabNavigation extends State<Tabnavigation> {
+  
+  final UserService userService = UserService();
+  late bool isAdmin = false;
+
+  @override
+  void initState()  {
+    super.initState();
+    getUserData();
+  }
+
+  void getUserData() async {
+    try {
+      final user = await userService.getUsuarioLogueado();
+      if (user.isNotEmpty) {
+        setState(() {
+          isAdmin = (user['isAdmin'] as bool?) ?? false;
+        });
+      } else {
+        print("No se encontraron datos del usuario.");
+      }
+
+    } catch (e) {
+      print("Error al obtener los datos del usuario: $e");
+    }
+  }
   int currentIndex = 0; 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +52,7 @@ class _ParticipantTabNavState extends State<ParticipantTabNav> {
               Navigator.pushNamed(context, '/galeria');
               break;
             case 2:
-              Navigator.pushNamed(context, '/perfil');
+               isAdmin? Navigator.pushNamed(context, '/configuracion'): Navigator.pushNamed(context, '/perfil');
               break;
             default:
               Navigator.pushNamed(context, '/home');
@@ -37,6 +65,12 @@ class _ParticipantTabNavState extends State<ParticipantTabNav> {
             icon: Icon(Icons.photo_library),
             label: "Galería",
           ),
+          if (isAdmin)
+            BottomNavigationBarItem(
+              icon: Icon(Icons.settings),
+              label: "Configuración",
+            )
+          else
           BottomNavigationBarItem(
             icon: Icon(Icons.person_outline),
             label: "Perfil",

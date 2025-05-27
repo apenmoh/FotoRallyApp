@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:foto_rally/Services/user_service.dart';
-import 'package:foto_rally/Widgets/ParticipantTabNav.dart';
+import 'package:foto_rally/Widgets/TabNavigation.dart';
 
 class Home_Participante extends StatefulWidget {
   const Home_Participante({super.key});
@@ -102,7 +102,7 @@ class _Home_ParticipanteState extends State<Home_Participante> {
                     icon: Icons.leaderboard,
                     text: "Estadistica",
                     onPressed: () {
-                      Navigator.pushNamed(context, '/baja');
+                      Navigator.pushNamed(context, '/estadisticas');
                     },
                   ),
                   Divider(color: Colors.white70),
@@ -128,7 +128,7 @@ class _Home_ParticipanteState extends State<Home_Participante> {
           ],
         ),
       ),
-      bottomNavigationBar: ParticipantTabNav(),
+      bottomNavigationBar: Tabnavigation(),
     );
   }
 }

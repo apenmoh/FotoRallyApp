@@ -3,7 +3,7 @@ import 'package:foto_rally/Services/alert_service.dart';
 import 'package:foto_rally/Services/auth_service.dart';
 import 'package:foto_rally/Services/user_service.dart';
 import 'package:foto_rally/Widgets/CustomButton.dart';
-import 'package:foto_rally/Widgets/ParticipantTabNav.dart';
+import 'package:foto_rally/Widgets/TabNavigation.dart';
 
 class Perfil extends StatefulWidget {
   const Perfil({super.key});
@@ -71,7 +71,7 @@ class _PerfilState extends State<Perfil> {
           ),
         ],
       ),
-      bottomNavigationBar: ParticipantTabNav(),
+      bottomNavigationBar: Tabnavigation(),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(20.0),

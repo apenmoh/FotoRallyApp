@@ -7,6 +7,7 @@ import 'package:foto_rally/pages/Configuration.dart';
 import 'package:foto_rally/pages/Galeria.dart';
 import 'package:foto_rally/pages/Galeria_Participante.dart';
 import 'package:foto_rally/pages/Home.dart';
+import 'package:foto_rally/pages/LeaderBoard.dart';
 import 'package:foto_rally/pages/LogIn.dart';
 import 'package:foto_rally/pages/Perfil.dart';
 import 'package:foto_rally/pages/SignUp.dart';
@@ -63,7 +64,8 @@ class _MyAppState extends State<MyApp> {
             '/subir_foto': (context) => SubirFoto(),
             '/perfil': (context) => Perfil(),
             '/validate': (context) => ValidatePhoto(),
-            '/configuracion': (context) => Configuration(), 
+            '/configuracion': (context) => Configuration(),
+            '/estadisticas': (context) => LeaderBoard(),
             '/galeria_participante': (context) => GaleriaParticipante(),
           },
         );
