@@ -127,8 +127,7 @@ class _ConfigurationState extends State<Configuration> {
       return Scaffold(
         appBar: AppBar(
           title: const Text('Configuración del Rally'),
-          backgroundColor: Colors.blue.shade700,
-          foregroundColor: Colors.white,
+          backgroundColor: Color(0xFF1A56DB),
           centerTitle: true,
         ),
         body: const Center(child: CircularProgressIndicator()),
@@ -136,11 +135,11 @@ class _ConfigurationState extends State<Configuration> {
     }
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Configuración del Rally'),
-        backgroundColor: Colors.blue.shade700,
-        foregroundColor: Colors.white,
+        title: const Text('Configuración del Rally',style: TextStyle(color: Colors.white),),
+        backgroundColor: Color(0xFF1A56DB),
         centerTitle: true,
       ),
+      backgroundColor: Color(0xFF111827),
       bottomNavigationBar: AdminTabNav(),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),

@@ -115,6 +115,11 @@ class _SubirFotoState extends State<SubirFoto> {
     setState(() {
       isLoading = true;
     });
+    final rallyRules = await firestoreService.getRallyRules();
+    if(!rallyRules['isRallyActive'] || (rallyRules['endDate'] as Timestamp).toDate().isBefore(DateTime.now())) {
+      alertService.error(context, 'El rally no está activo. No se pueden subir fotos.');
+      return;
+    }
     try {
       if (selectedImageFile == null ||
           theme == null ||

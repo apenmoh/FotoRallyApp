@@ -154,8 +154,7 @@ class _UsuariosCardState extends State<UsuariosCard> {
   }
 
   Future<void> darBaja(BuildContext context, String userId) async {
-    await userService.updateUserStatus(userId, 'inactivo');
-    await userService.updateUserBaja(userId, false);
+    await userService.darBaja(userId);
     alertService.success(context, 'Usuario dado de baja correctamente.');
     setState(() {
       // Refresh the list of users after accepting a participant

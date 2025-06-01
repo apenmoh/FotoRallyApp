@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:foto_rally/Services/alert_service.dart';
 import 'package:foto_rally/Services/firestore_service.dart';
@@ -125,11 +126,29 @@ class _GaleriaParticipanteState extends State<Galeria> {
 
   void VotePhoto(String id, String userId) async {
     try {
+      setState(() {
+        isLoading = true;
+      });
+      
+      final rallyRules = await firestoreService.getRallyRules();
+      if (!rallyRules['isRallyActive'] ||(rallyRules['endDate'] as Timestamp).toDate().isBefore(DateTime.now())) {
+        alertService.error(context,'El rally no está activo. No se pueden Votar.');
+        setState(() {
+          isLoading = false;
+        });
+        return;
+      }
       await firestoreService.votePhoto(id, userId);
       alertService.success(context, "Voto registrado correctamente.");
       _loadPhotos();
+      setState(() {
+        isLoading = false;
+      });
     } catch (e) {
       alertService.error(context, "$e");
+      setState(() {
+        isLoading = false;
+      });
     }
   }
 }

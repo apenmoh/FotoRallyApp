@@ -263,8 +263,40 @@ class UserService {
 
       return topParticipants;
     } catch (e) {
-      print('Error al obtener top participantes: $e'); // Para depuración
+      print('Error al obtener top participantes: $e'); 
       throw Exception('No se pudo cargar el leaderboard: $e');
+    }
+  }
+
+  Future<void> updateFotoCount(String uid, int count) async {
+    try {
+      await _firestore.collection('Participantes').doc(uid).update({
+        'fotosCount': count,
+      });
+    } catch (e) {
+      print('Error al actualizar el contador de fotos: $e');
+    }
+  }
+
+  //Dar Baja a un usuario implica que se borra de la colección Participantes, Se borran las fotos asociadas,Se borran los votos asociados y se actualiza el estado a baja en la colección Fotos
+  Future<void> darBaja(String uid) async {
+    try {
+      await updateUserBaja(uid, false);
+      await updateUserStatus(uid, 'inactivo');
+      
+
+      // Eliminar las fotos asociadas al usuario
+      final QuerySnapshot photosSnapshot = await _firestore
+          .collection('Fotos')
+          .where('userId', isEqualTo: uid)
+          .get();
+      for (var doc in photosSnapshot.docs) {
+        await doc.reference.delete();
+      }
+      await updateFotoCount(uid, 0);
+
+    } catch (e) {
+      print('Error al dar de baja al usuario: $e');
     }
   }
 }

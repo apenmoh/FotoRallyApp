@@ -135,8 +135,17 @@ class _PerfilState extends State<Perfil> {
 
   void guardarDatos() async {
     try {
+      if(userData['nombre'] == null || userData['email'] == null || userData['localidad'] == null) {
+        alertService.error(context, "Por favor, completa todos los campos antes de guardar.");
+        return;
+      }
       await userService.updateUser(userId, userData);
       alertService.success(context, "Datos guardados correctamente");
+      final user = await userService.getUsuarioLogueado();
+      if(user['email'] != userData['email']) {
+        await authService.updateEmail(userData['email']);
+        alertService.notify(context, "Cambios de correo deben ser confirmados en el correo electrónico.");
+      }
     } catch (e) {
       alertService.error(context, "Error al guardar los datos: $e");
     }
@@ -193,7 +202,7 @@ class _PerfilState extends State<Perfil> {
 
   void logut() async {
     await authService.logout();
-    Navigator.pushNamed(context, '/login');
+    Navigator.pushNamedAndRemoveUntil(context,'/login',(Route<dynamic> route) => false,);
     alertService.success(context,"Sesión cerrada correctamente");
   }
 }

@@ -135,4 +135,9 @@ class AuthService {
   Future<bool> userLoogedIn() async {
     return  _auth.currentUser != null;
   }
+   Future<void> updateEmail(String email) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('email', email ?? '');
+    return await _auth.currentUser?.verifyBeforeUpdateEmail(email.trim());
+  }
 }
