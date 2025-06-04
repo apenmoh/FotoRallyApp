@@ -88,7 +88,7 @@ class AuthService {
         "userId": userCredential.user?.uid,
         "status": "pendiente",
         "baja": false,
-        "fotoCount": 0,
+        "fotosCount": 0,
         "voteCount": 0,
         "createdAt": DateTime.now(),
       };
@@ -113,7 +113,7 @@ class AuthService {
     if (!iniciado) {
       return '';
     }
-    var userId =  _auth.currentUser?.uid;
+    var userId = _auth.currentUser?.uid;
     return userId.toString();
   }
 
@@ -133,9 +133,10 @@ class AuthService {
   }
 
   Future<bool> userLoogedIn() async {
-    return  _auth.currentUser != null;
+    return _auth.currentUser != null;
   }
-   Future<void> updateEmail(String email) async {
+
+  Future<void> updateEmail(String email) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setString('email', email ?? '');
     return await _auth.currentUser?.verifyBeforeUpdateEmail(email.trim());

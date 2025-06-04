@@ -45,7 +45,11 @@ class _LeaderBoardState extends State<LeaderBoard> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Leaderboard',style: TextStyle(color: Colors.white),), centerTitle: true,backgroundColor: Colors.blue,),
+      appBar: AppBar(
+        title: const Text('Leaderboard', style: TextStyle(color: Colors.white)),
+        centerTitle: true,
+        backgroundColor: Color(0xFF6200EE),
+      ),
       bottomNavigationBar: Tabnavigation(),
       body:
           _isLoading
@@ -78,14 +82,14 @@ class _LeaderBoardState extends State<LeaderBoard> {
           backgroundColor: Colors.blue.shade100,
           child: Text(
             '$rank',
-            style: const TextStyle(fontWeight: FontWeight.bold,fontSize: 15),
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
           ),
         ),
         title: Text(participant['nombre'] ?? 'Nombre desconocido'),
         subtitle: Text(participant['localidad'] ?? 'Localidad desconocida'),
         trailing: Text(
           '${participant['totalVotes'] ?? 0} votos',
-          style: const TextStyle(fontWeight: FontWeight.bold,fontSize: 18),
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
         ),
       ),
     );
