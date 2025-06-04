@@ -64,9 +64,7 @@ class FirestoreService {
         // Actualizar el contador de fotos del usuario
         await userService.incrementUserPhotoCount(id);
       } else {
-        throw(
-          'El usuario ha alcanzado el límite de fotos permitidas.',
-        );
+        throw ('El usuario ha alcanzado el límite de fotos permitidas.',);
       }
     } catch (e) {
       throw ('$e');
@@ -104,7 +102,10 @@ class FirestoreService {
   Future<List<Map<String, dynamic>>> getApprovedPhotos() async {
     try {
       QuerySnapshot snapshot =
-          await _firestore.collection('Fotos').where('status', isEqualTo: 'aprobada').get();
+          await _firestore
+              .collection('Fotos')
+              .where('status', isEqualTo: 'aprobada')
+              .get();
       return snapshot.docs
           .map((doc) => doc.data() as Map<String, dynamic>)
           .toList();
@@ -148,49 +149,48 @@ class FirestoreService {
 
   // Eliminar una foto
   Future<void> deletePhoto(String photoId) async {
-  try {
-    final photoDoc = await _firestore.collection('Fotos').doc(photoId).get();
+    try {
+      final photoDoc = await _firestore.collection('Fotos').doc(photoId).get();
 
-    if (!photoDoc.exists) {
-      throw Exception('La foto no existe');
+      if (!photoDoc.exists) {
+        throw Exception('La foto no existe');
+      }
+
+      final photoData = photoDoc.data()!;
+      final uploaderId = photoData['userId'] as String;
+
+      // Eliminar la foto
+      await _firestore.collection('Fotos').doc(photoId).delete();
+
+      // Buscar todos los votos asociados a la foto
+      final votesSnapshot =
+          await _firestore
+              .collection('Votos')
+              .where('photoId', isEqualTo: photoId)
+              .get();
+
+      // Obtener los IDs de los votantes únicos
+      final Set<String> voterIds = {};
+
+      for (var voteDoc in votesSnapshot.docs) {
+        final voterId = voteDoc['voterId'] as String;
+        voterIds.add(voterId);
+
+        // Eliminar el voto
+        await voteDoc.reference.delete();
+      }
+
+      // Actualizar el voteCount de cada votante
+      for (final voterId in voterIds) {
+        await updateUserVoteCount(voterId);
+      }
+
+      // Actualizar el fotosCount del usuario que subió la foto
+      await userService.decrementUserPhotoCount(uploaderId);
+    } catch (e) {
+      throw Exception('Error al eliminar la foto: $e');
     }
-
-    final photoData = photoDoc.data()!;
-    final uploaderId = photoData['userId'] as String;
-
-    // Eliminar la foto
-    await _firestore.collection('Fotos').doc(photoId).delete();
-
-    // Buscar todos los votos asociados a la foto
-    final votesSnapshot = await _firestore
-        .collection('Votos')
-        .where('photoId', isEqualTo: photoId)
-        .get();
-
-    // Obtener los IDs de los votantes únicos
-    final Set<String> voterIds = {};
-
-    for (var voteDoc in votesSnapshot.docs) {
-      final voterId = voteDoc['voterId'] as String;
-      voterIds.add(voterId);
-
-      // Eliminar el voto
-      await voteDoc.reference.delete();
-    }
-
-    // Actualizar el voteCount de cada votante
-    for (final voterId in voterIds) {
-      await updateUserVoteCount(voterId);
-    }
-
-    // Actualizar el fotosCount del usuario que subió la foto
-    await userService.decrementUserPhotoCount(uploaderId);
-
-  } catch (e) {
-    throw Exception('Error al eliminar la foto: $e');
   }
-}
-
 
   Future<void> updateUserVoteCount(String userId) async {
     final votesSnapshot =
@@ -210,11 +210,12 @@ class FirestoreService {
   Future<void> votePhoto(String photoId, String userId) async {
     try {
       // Verificar si el usuario ya ha votado por esta foto
-      final existingVote = await _firestore
-          .collection('Votos')
-          .where('voterId', isEqualTo: userId)
-          .where('photoId', isEqualTo: photoId)
-          .get();
+      final existingVote =
+          await _firestore
+              .collection('Votos')
+              .where('voterId', isEqualTo: userId)
+              .where('photoId', isEqualTo: photoId)
+              .get();
       if (existingVote.docs.isNotEmpty) {
         throw ('Ya has votado esta foto.');
       }
@@ -228,10 +229,10 @@ class FirestoreService {
 
       final doc = await _firestore.collection('Votos').doc();
       final vote = {
-        'id':doc.id,
+        'id': doc.id,
         'voterId': currentUserId,
         'photoId': photoId,
-        'voteDate':Timestamp.fromDate(DateTime.now()),
+        'voteDate': Timestamp.fromDate(DateTime.now()),
       };
       await doc.set(vote);
 
@@ -248,17 +249,16 @@ class FirestoreService {
 
   // Obtener votos de una foto ( el vote es un campo en la tabla de Fotos)
   Future<int> getPhotoVotes(String photoId) async {
-  try {
-    final snapshot = await _firestore.collection('Fotos').doc(photoId).get();
-    if (snapshot.exists) {
-      final data = snapshot.data() as Map<String, dynamic>;
-      return data['votes'] ?? 0;
-    } else {
-      throw Exception('La foto con ID $photoId no existe.');
+    try {
+      final snapshot = await _firestore.collection('Fotos').doc(photoId).get();
+      if (snapshot.exists) {
+        final data = snapshot.data() as Map<String, dynamic>;
+        return data['votes'] ?? 0;
+      } else {
+        throw Exception('La foto con ID $photoId no existe.');
+      }
+    } catch (e) {
+      throw Exception('Error al obtener los votos de la foto: $e');
     }
-  } catch (e) {
-    throw Exception('Error al obtener los votos de la foto: $e');
   }
-}
-  
 }

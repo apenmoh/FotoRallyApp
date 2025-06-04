@@ -169,6 +169,7 @@ class UserService {
       print('Error al decrementar el contador de fotos: $e');
     }
   }
+
   // Incrementar el contador de votos de un usuario
   Future<void> incrementUserVoteCount(String uid) async {
     try {
@@ -179,6 +180,7 @@ class UserService {
       print('Error al incrementar el contador de votos: $e');
     }
   }
+
   // Decrementar el contador de votos de un usuario
   Future<void> decrementUserVoteCount(String uid) async {
     try {
@@ -189,6 +191,7 @@ class UserService {
       print('Error al decrementar el contador de votos: $e');
     }
   }
+
   // Obtener el contador de votos de un usuario
   Future<int> getUserVoteCount(String uid) async {
     try {
@@ -205,29 +208,38 @@ class UserService {
     }
   }
 
-  
   //Obtener top 3 Usuarios con más votos
- Future<List<Map<String, dynamic>>> getTopParticipantsByVotes() async {
+  Future<List<Map<String, dynamic>>> getTopParticipantsByVotes() async {
     try {
       // 1. Obtener todas las fotos y agrupar votos por userId
       final QuerySnapshot photosSnapshot =
-          await _firestore.collection('Fotos').where('status', isEqualTo: 'aprobada').get();
+          await _firestore
+              .collection('Fotos')
+              .where('status', isEqualTo: 'aprobada')
+              .get();
 
       Map<String, int> userVotes = {};
 
       for (var doc in photosSnapshot.docs) {
         final data = doc.data() as Map<String, dynamic>;
         final userId = data['userId'] as String?;
-        final votes = (data['votes'] as num?)?.toInt() ?? 0; // Asegura que los votos sean enteros
+        final votes =
+            (data['votes'] as num?)?.toInt() ??
+            0; // Asegura que los votos sean enteros
 
         if (userId != null) {
-          userVotes.update(userId, (value) => value + votes, ifAbsent: () => votes);
+          userVotes.update(
+            userId,
+            (value) => value + votes,
+            ifAbsent: () => votes,
+          );
         }
       }
 
       // 2. Crear una lista de IDs de usuario ordenados por sus votos (de mayor a menor)
-      List<String> sortedUserIds = userVotes.keys.toList()
-        ..sort((a, b) => userVotes[b]!.compareTo(userVotes[a]!));
+      List<String> sortedUserIds =
+          userVotes.keys.toList()
+            ..sort((a, b) => userVotes[b]!.compareTo(userVotes[a]!));
 
       // 3. Limitar a los top 3 (o menos si hay menos de 3)
       List<String> top3UserIds = sortedUserIds.take(3).toList();
@@ -236,10 +248,11 @@ class UserService {
 
       // 4. Obtener la información de cada participante del top 3
       if (top3UserIds.isNotEmpty) {
-        final QuerySnapshot participantsSnapshot = await _firestore
-            .collection('Participantes')
-            .where('userId', whereIn: top3UserIds)
-            .get();
+        final QuerySnapshot participantsSnapshot =
+            await _firestore
+                .collection('Participantes')
+                .where('userId', whereIn: top3UserIds)
+                .get();
 
         Map<String, Map<String, dynamic>> participantData = {};
         for (var doc in participantsSnapshot.docs) {
@@ -263,7 +276,7 @@ class UserService {
 
       return topParticipants;
     } catch (e) {
-      print('Error al obtener top participantes: $e'); 
+      print('Error al obtener top participantes: $e');
       throw Exception('No se pudo cargar el leaderboard: $e');
     }
   }
@@ -281,22 +294,65 @@ class UserService {
   //Dar Baja a un usuario implica que se borra de la colección Participantes, Se borran las fotos asociadas,Se borran los votos asociados y se actualiza el estado a baja en la colección Fotos
   Future<void> darBaja(String uid) async {
     try {
+      // 1. Desactivar al usuario
       await updateUserBaja(uid, false);
       await updateUserStatus(uid, 'inactivo');
-      
 
-      // Eliminar las fotos asociadas al usuario
-      final QuerySnapshot photosSnapshot = await _firestore
-          .collection('Fotos')
-          .where('userId', isEqualTo: uid)
-          .get();
-      for (var doc in photosSnapshot.docs) {
-        await doc.reference.delete();
+      // 2. Buscar todas las fotos del usuario
+      final photosSnapshot =
+          await _firestore
+              .collection('Fotos')
+              .where('userId', isEqualTo: uid)
+              .get();
+
+      // Set para acumular todos los voterIds únicos
+      final Set<String> allVoterIds = {};
+
+      for (var photoDoc in photosSnapshot.docs) {
+        final photoId = photoDoc.id;
+
+        // 3. Eliminar todos los votos asociados a la foto
+        final votesSnapshot =
+            await _firestore
+                .collection('Votos')
+                .where('photoId', isEqualTo: photoId)
+                .get();
+
+        for (var voteDoc in votesSnapshot.docs) {
+          final voterId = voteDoc['voterId'] as String;
+          allVoterIds.add(voterId);
+          await voteDoc.reference.delete();
+        }
+
+        // 4. Eliminar la foto
+        await photoDoc.reference.delete();
       }
+
+      // 5. Actualizar voteCount de todos los votantes
+      for (final voterId in allVoterIds) {
+        await updateUserVoteCount(voterId);
+      }
+
+      // 6. Actualizar fotosCount del usuario dado de baja
       await updateFotoCount(uid, 0);
 
+      print('Usuario dado de baja correctamente.');
     } catch (e) {
       print('Error al dar de baja al usuario: $e');
     }
+  }
+
+  Future<void> updateUserVoteCount(String userId) async {
+    final votesSnapshot =
+        await _firestore
+            .collection('Votos')
+            .where('voterId', isEqualTo: userId)
+            .get();
+
+    final voteCount = votesSnapshot.size;
+
+    await _firestore.collection('Participantes').doc(userId).update({
+      'voteCount': voteCount,
+    });
   }
 }
