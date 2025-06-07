@@ -48,7 +48,7 @@ class _LeaderBoardState extends State<LeaderBoard> {
       appBar: AppBar(
         title: const Text('Leaderboard', style: TextStyle(color: Colors.white)),
         centerTitle: true,
-        backgroundColor: Color(0xFF6200EE),
+        backgroundColor: Color(0xFF1A56DB),
       ),
       bottomNavigationBar: Tabnavigation(),
       body:

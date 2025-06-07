@@ -33,7 +33,7 @@ class _SignUpState extends State<SignUp> {
             fontWeight: FontWeight.bold,
           ),
         ),
-        backgroundColor: Colors.blue[600],
+        backgroundColor: Color(0xFF1A56DB),
       ),
       body: SingleChildScrollView(
         child: Column(
