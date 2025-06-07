@@ -104,7 +104,7 @@ FotoRallyApp es una aplicación móvil multiplataforma diseñada para organizar 
 
 ### ✅ Requisitos técnicos
 
-- **Flutter** 3.16.x
+- **Flutter** 3.7.x
 - **Firebase Firestore** y **Authentication**
 - **Cloudinary** para almacenamiento de imágenes
 - **AppCircle** para generar APK
@@ -112,57 +112,27 @@ FotoRallyApp es una aplicación móvil multiplataforma diseñada para organizar 
 
 ---
 
+## 🔧 Guía de Instalación y Ejecución
 
+### 1. Requisitos
 
+- Flutter 3.7.x
+- Android Studio o dispositivo Android
+- Cuenta en Firebase
+- Cuenta en Cloudinary
+- Git y Visual Studio Code
 
-## 1. Tecnologías utilizadas
-- **Framework**: Flutter (versión 3.x)  
-  - *Justificación*: Multiplataforma, alto rendimiento, interfaces atractivas.  
-- **Base de datos**: Firebase Firestore  
-  - *Justificación*: Sincronización en tiempo real, integración con Flutter.  
-- **Almacenamiento**: Cloudinary  
-  - *Justificación*: Nivel gratuito generoso (25 GB), gestión eficiente de fotos.  
-- **Control de versiones**: Git (GitHub)  
-  - *Justificación*: Seguimiento incremental.  
+---
 
-## 2. Diagramas
-- **Modelo de datos (Firestore)**:  
-  - **Participantes**: `userId` (string), `email` (string), `username` (string), `createdAt` (timestamp), `status` (string: "pendiente", "activo", "inactivo"), `location` (string, opcional), `fotosCount` (int), `voteCount` (int).
-  - **Administradores**: `id` (string), `email` (string), `password` (string, opcional si usas Firebase Auth), `createdAt` (timestamp).  
-  - **Fotos**: `photoId` (string), `userId` (string), `url` (string), `status` (string: "pendiente", "aprobada", "rechazada"), `uploadDate` (timestamp), `title` (string), `category` (string: ej. "Naturaleza"), `description` (string),  `theme` (string), `location` (string).  
-  - **Votaciones**: `voteId` (string), `photoId` (string), `voterId` (string, el `userId` del participante que vota), `voteDate` (timestamp).  
-  - **Configuracion**: `startDate` (timestamp), `endDate` (timestamp), `photoLimit` (int, ej. 5), `voteLimit` (int, ej. 10), `isRallyActive` (bool), `allowedCategories` (string, ej. "Naturaleza,Urbano,Retratos"), `theme` (string, opcional), `timeFrame` (string, opcional).  
-- *Nota*: Fotos almacenadas en Cloudinary, URL en `Fotos`. Votación solo para participantes activos.  
+### 2. Clonar el proyecto
 
-- **Arquitectura**:  
-  - Frontend: Flutter (UI y lógica).  
-  - Backend: Firebase Firestore (datos), Cloudinary (fotos), Firebase Authentication (login).  
-  - Flujo: Flutter interactúa con Firestore para CRUD, Cloudinary para fotos, Auth para login.
+git clone https://github.com/apenmoh/FotoRallyApp.git
+cd FotoRallyApp
 
-## 3. Desarrollo del proyecto
-- Decisión inicial: Flutter + Firebase por compatibilidad y simplicidad.  
-- Nombre: PhotoRally, por claridad y conexión con el rally fotográfico.  
-- Modelo de datos: Cuatro colecciones (Participantes, Administradores, Fotos, Votaciones, Configuracion).  
-- **Categorías de fotos**: Definidas en `Configuracion.allowedCategories` (ej. Naturaleza, Urbano, Retratos, Abstracto, Cultura).  
-- **Notas**:  
-  - `Fotos` incluye `timeFrame`, `theme`, `location`.  
-  - `Participantes` incluye `location`.  
-  - Separación en `Participantes` y `Administradores`.  
-  - `Configuracion` para plazos, límites y reglas del rally:
-    - `photoLimit`: Máximo de fotos por participante.
-    - `voteLimit`: Máximo de votos por participante.
-    - `isRallyActive`: Indica si el rally está activo.
-    - `allowedCategories`: Categorías permitidas para las fotos.
-    - `theme` y `timeFrame`: Tema y marco temporal del rally, si aplica.
-  - Votación restringida a participantes activos (1 voto por foto, máximo `voteLimit` votos por participante).  
-  - Límite de fotos subidas por participante definido por `photoLimit`.
+### 3. Instalar dependencias
+flutter pub get
 
-## 4. Estructura de pantallas
-- **Inicio**: Info del rally (fechas, reglas desde `Configuracion`), botones "Iniciar Sesión", "Registrarse", "Ver Galería".  
-- **Registro**: Formulario para participantes (email, username, contraseña, localidad; espera aprobación).  
-- **Participante**: Botones "Ver/Subir Fotos" (máximo `photoLimit`), "Galería General" (con opción de votar máximo `voteLimit`), "Solicitud Baja", "Perfil".  
-- **Admin**: Botones "Dar Alta/Baja", "Validar Fotos", "Galería General", "Configuración del Rally" (editar campos de `Configuracion`).  
-- **Público**: Botones "Ver Galería" (solo visualización).  
-- *Nota*: Galería muestra fotos en cartas (ScrollView). Votación exclusiva para participantes activos.
+### 4. Ejecutar el proyecto
+flutter run
 
 
