@@ -59,12 +59,12 @@ class _PerfilState extends State<Perfil> {
     }
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Perfil',style: TextStyle(color: Colors.white)),
+        title: const Text('Perfil', style: TextStyle(color: Colors.white)),
         centerTitle: true,
         backgroundColor: Color(0xFF1A56DB),
         actions: [
           IconButton(
-            icon:  Icon(Icons.logout,color: Colors.white,),
+            icon: Icon(Icons.logout, color: Colors.white),
             onPressed: () {
               logut();
             },
@@ -135,16 +135,24 @@ class _PerfilState extends State<Perfil> {
 
   void guardarDatos() async {
     try {
-      if(userData['nombre'] == null || userData['email'] == null || userData['localidad'] == null) {
-        alertService.error(context, "Por favor, completa todos los campos antes de guardar.");
+      if (userData['nombre'] == '' ||
+          userData['email'] == '' ||
+          userData['localidad'] == '') {
+        alertService.error(
+          context,
+          "Por favor, completa todos los campos antes de guardar.",
+        );
         return;
       }
       await userService.updateUser(userId, userData);
       alertService.success(context, "Datos guardados correctamente");
       final user = await userService.getUsuarioLogueado();
-      if(user['email'] != userData['email']) {
+      if (user['email'] != userData['email']) {
         await authService.updateEmail(userData['email']);
-        alertService.notify(context, "Cambios de correo deben ser confirmados en el correo electrónico.");
+        alertService.notify(
+          context,
+          "Cambios de correo deben ser confirmados en el correo electrónico.",
+        );
       }
     } catch (e) {
       alertService.error(context, "Error al guardar los datos: $e");
@@ -153,7 +161,10 @@ class _PerfilState extends State<Perfil> {
 
   void solicitarBaja() async {
     try {
-      final confirm = await alertService.confirm(context, "Estas seguro de que quieres solicitar la baja? Esto eliminará tu cuenta y todas tus fotos.");
+      final confirm = await alertService.confirm(
+        context,
+        "Estas seguro de que quieres solicitar la baja? Esto eliminará tu cuenta y todas tus fotos.",
+      );
       if (!confirm) return;
       await userService.updateUserBaja(userId, true);
       alertService.success(context, "Solicitud de baja enviada");
@@ -202,7 +213,11 @@ class _PerfilState extends State<Perfil> {
 
   void logut() async {
     await authService.logout();
-    Navigator.pushNamedAndRemoveUntil(context,'/login',(Route<dynamic> route) => false,);
-    alertService.success(context,"Sesión cerrada correctamente");
+    Navigator.pushNamedAndRemoveUntil(
+      context,
+      '/login',
+      (Route<dynamic> route) => false,
+    );
+    alertService.success(context, "Sesión cerrada correctamente");
   }
 }
